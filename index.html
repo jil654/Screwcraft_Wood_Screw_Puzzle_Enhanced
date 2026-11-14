@@ -8,7 +8,7 @@
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#2b1a0e;color:#fff;overflow-x:hidden}
   .topbar{background:#1a0f07;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-  .logo{font-weight:900;font-size:20px;letter-spacing:.5px}.logo span{color:#ffb347}
+  .logo{font-weight:900;font-size:20px}.logo span{color:#ffb347}
   .stats{display:flex;gap:8px;font-size:13px}
   .pill{background:#3a2412;border:1px solid #6b4420;padding:6px 10px;border-radius:20px}
   .wrap{max-width:520px;margin:0 auto;padding:14px 12px 20px}
@@ -17,14 +17,13 @@
   .levelbar p{margin:2px 0 0;color:#d8b48f;font-size:13px}
   .btn{background:#ffb347;color:#2b1a0e;border:none;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}
   .btn.secondary{background:#4a2f18;color:#fff;border:1px solid #6b4420}
-  .btn:active{transform:scale(.97)}
   .board{position:relative;height:440px;border-radius:20px;overflow:hidden;background:linear-gradient(145deg,#a9743c,#7a4a1f 55%,#5e3512);border:6px solid #3a1f08;box-shadow:0 12px 30px rgba(0,0,0,.5)}
   .hint-text{text-align:center;color:#ffe2b8;font-size:13px;margin:10px 0 6px}
-  .plank{position:absolute;border-radius:14px;border:3px solid rgba(0,0,0,.35);box-shadow:0 6px 14px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;transition:all .5s ease}
-  .plank.removing{transform:translateY(120px) rotate(8deg);opacity:0;pointer-events:none}
-  .plank-label{font-weight:900;letter-spacing:1px;text-shadow:0 1px 2px rgba(0,0,0,.5);pointer-events:none;opacity:.9}
-  .hole{position:absolute;width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #2a1506, #0f0702 70%);border:3px solid #1a0c03;box-shadow:inset 0 3px 6px #000;z-index:1}
-  .screw{position:absolute;width:40px;height:40px;border-radius:50%;z-index:5;cursor:pointer;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 32% 28%, #ffffff, #c8ccd2 28%, #7a7f88 55%, #3a3d44 85%);border:2px solid #222;box-shadow:0 4px 8px rgba(0,0,0,.55);transition:all .35s ease;touch-action:manipulation}
+  .plank{position:absolute;border-radius:14px;border:3px solid rgba(0,0,0,.35);box-shadow:0 6px 14px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;transition:all .5s ease;pointer-events:none}
+  .plank.removing{transform:translateY(120px) rotate(8deg);opacity:0}
+  .plank-label{font-weight:900;letter-spacing:1px;text-shadow:0 1px 2px rgba(0,0,0,.5);opacity:.9}
+  .hole{position:absolute;width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #2a1506, #0f0702 70%);border:3px solid #1a0c03;box-shadow:inset 0 3px 6px #000;z-index:1;pointer-events:none}
+  .screw{position:absolute;width:48px;height:48px;border-radius:50%;z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 32% 28%, #ffffff, #c8ccd2 28%, #7a7f88 55%, #3a3d44 85%);border:2px solid #222;box-shadow:0 4px 8px rgba(0,0,0,.55);transition:all .35s ease;touch-action:manipulation}
   .screw::before{content:"";position:absolute;width:22px;height:4px;background:#222;border-radius:4px;transform:rotate(35deg)}
   .screw::after{content:"";position:absolute;width:8px;height:8px;background:#eee;border-radius:50%;border:1px solid #555}
   .screw.selected{outline:3px solid #ffe600;outline-offset:2px;transform:scale(1.18) translateY(-8px)}
@@ -35,7 +34,7 @@
   .tray{margin-top:14px;background:#1a0f07;border:2px solid #4a2f18;border-radius:16px;padding:12px}
   .tray h3{margin:0 0 8px;font-size:14px;color:#ffcf8a}
   .tray-holes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-  .tray-hole{width:44px;height:44px;border-radius:50%;background:#0f0702;border:3px dashed #6b4420;display:flex;align-items:center;justify-content:center;position:relative}
+  .tray-hole{width:48px;height:48px;border-radius:50%;background:#0f0702;border:3px dashed #6b4420;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
   .tray-hole.filled{border-style:solid;border-color:#ffb347}
   .controls{display:flex;gap:10px;margin-top:14px}
   .controls .btn{flex:1}
@@ -50,7 +49,7 @@
   .modal.show{display:flex}
   .card{background:#fff;color:#222;border-radius:20px;padding:22px;text-align:center;max-width:340px;width:100%}
   .card h2{margin:0 0 6px}.card p{color:#555}
-  @media(max-width:480px){.board{height:400px}.screw{width:36px;height:36px}.hole{width:32px;height:32px}}
+  @media(max-width:480px){.board{height:400px}.screw{width:44px;height:44px}.hole{width:32px;height:32px}}
 </style>
 </head>
 <body>
@@ -63,10 +62,10 @@
     <div><h2 id="levelTitle">Level 1</h2><p id="levelDesc">Easy - Remove all planks</p></div>
     <button class="btn secondary" onclick="showHow()">How to Play</button>
   </div>
-  <div class="hint-text" id="hintText">Tap a screw, then tap an empty hole in the tray to unscrew it</div>
+  <div class="hint-text" id="hintText">Tap any screw - it will auto-move to tray</div>
   <div class="board" id="board"></div>
   <div class="tray">
-    <h3>Screw Tray - Tap an empty hole after selecting a screw</h3>
+    <h3>Screw Tray - Screws auto-move here</h3>
     <div class="tray-holes" id="trayHoles"></div>
   </div>
   <div class="controls">
@@ -78,7 +77,6 @@
     <h3>All Levels <span style="font-weight:400;font-size:12px;color:#aaa">(Progress Saved)</span></h3>
     <div class="grid" id="levelGrid"></div>
   </div>
-  <p style="text-align:center;color:#c99a68;font-size:12px;margin-top:14px">Progressive Difficulty - Unique Layout Every Level - Tested on Mobile and Desktop</p>
 </div>
 <div class="modal" id="winModal">
   <div class="card">
@@ -91,7 +89,7 @@
 <div class="modal" id="howModal">
   <div class="card">
     <h2>How to Play</h2>
-    <p style="text-align:left;line-height:1.6">1. Tap any screw on a wooden plank.<br>2. Tap an empty hole in the tray below.<br>3. Screw flies to tray. When all screws of a plank are removed, plank falls.<br>4. Remove all planks to win.</p>
+    <p style="text-align:left;line-height:1.6">1. Just TAP any screw.<br>2. It will auto-fly to empty tray hole.<br>3. When all screws of a plank are removed, plank falls.<br>4. Remove all planks to win.</p>
     <button class="btn" style="width:100%" onclick="closeHow()">Got It</button>
   </div>
 </div>
@@ -117,9 +115,7 @@ var currentLevel = parseInt(localStorage.getItem('screwcraft_level') || '0');
 var unlocked = parseInt(localStorage.getItem('screwcraft_unlocked') || '0');
 var score = parseInt(localStorage.getItem('screwcraft_score') || '0');
 var moves = 0;
-var selectedScrew = null;
-var history = [];
-var trayState = [];
+var isMoving = false;
 function save() { localStorage.setItem('screwcraft_level', currentLevel); localStorage.setItem('screwcraft_unlocked', unlocked); localStorage.setItem('screwcraft_score', score); }
 function renderLevelGrid() {
   var g = document.getElementById('levelGrid');
@@ -142,18 +138,17 @@ function loadLevel() {
   document.getElementById('levelDesc').textContent = lvl.desc;
   document.getElementById('moves').textContent = moves;
   document.getElementById('score').textContent = score;
+  document.getElementById('hintText').textContent = 'Tap any screw - it will auto-move to tray';
+  isMoving = false;
   var board = document.getElementById('board');
   board.innerHTML = '';
-  history = [];
-  selectedScrew = null;
-  trayState = [];
   var trayCount = lvl.planks.length * 2;
   var tray = document.getElementById('trayHoles');
   tray.innerHTML = '';
   for (var ti = 0; ti < trayCount; ti++) {
     var h = document.createElement('div');
     h.className = 'tray-hole';
-    (function(idx, holeEl) { holeEl.onclick = function() { placeInTray(idx, holeEl); }; })(ti, h);
+    h.setAttribute('data-empty', '1');
     tray.appendChild(h);
   }
   for (var pi = 0; pi < lvl.planks.length; pi++) {
@@ -188,52 +183,55 @@ function loadLevel() {
       s.setAttribute('data-plank', pi);
       s.style.left = pos.x + 'px';
       s.style.top = pos.y + 'px';
-      (function(screwEl) { screwEl.onclick = function(e) { e.stopPropagation(); selectScrew(screwEl); }; })(s);
+      (function(screwEl) {
+        screwEl.onclick = function(e) { e.stopPropagation(); moveScrew(screwEl); };
+        screwEl.ontouchstart = function(e) { e.preventDefault(); moveScrew(screwEl); };
+      })(s);
       board.appendChild(s);
     }
   }
   renderLevelGrid();
   save();
 }
-function selectScrew(s) {
-  var all = document.querySelectorAll('#board .screw');
-  for (var i = 0; i < all.length; i++) { all[i].classList.remove('selected'); }
-  selectedScrew = s;
-  s.classList.add('selected');
-  document.getElementById('hintText').textContent = 'Screw selected! Now tap an empty hole in the tray below.';
-}
-function placeInTray(idx, holeEl) {
-  if (!selectedScrew) { document.getElementById('hintText').textContent = 'First tap a screw on the plank!'; return; }
-  if (trayState[idx]) { document.getElementById('hintText').textContent = 'That tray hole is full. Choose an empty one.'; return; }
-  var s = selectedScrew;
+function moveScrew(s) {
+  if (isMoving) { return; }
+  if (!s || !s.parentNode) { return; }
+  var holes = document.querySelectorAll('.tray-hole');
+  var targetHole = null;
+  for (var i = 0; i < holes.length; i++) {
+    if (holes[i].getAttribute('data-empty') === '1') { targetHole = holes[i]; break; }
+  }
+  if (!targetHole) { document.getElementById('hintText').textContent = 'Tray is full!'; return; }
+  isMoving = true;
   var plankIdx = parseInt(s.getAttribute('data-plank'));
-  history.push({plank: plankIdx, trayIdx: idx});
+  s.classList.add('selected');
   s.classList.add('flying');
-  trayState[idx] = true;
-  holeEl.classList.add('filled');
+  targetHole.setAttribute('data-empty', '0');
+  targetHole.classList.add('filled');
+  var finalHole = targetHole;
   setTimeout(function() {
-    s.remove();
+    if (s.parentNode) { s.remove(); }
     var clone = document.createElement('div');
     clone.className = 'tray-screw';
-    holeEl.appendChild(clone);
+    finalHole.appendChild(clone);
     moves = moves + 1;
     score = score + 10;
     document.getElementById('moves').textContent = moves;
     document.getElementById('score').textContent = score;
-    selectedScrew = null;
+    isMoving = false;
     checkPlankComplete(plankIdx);
     save();
-  }, 220);
+  }, 300);
 }
 function checkPlankComplete(pi) {
   var remaining = document.querySelectorAll('#board .screw[data-plank="' + pi + '"]').length;
   if (remaining === 0) {
     var plank = document.getElementById('plank-' + pi);
     if (plank) { plank.classList.add('removing'); }
-    document.getElementById('hintText').textContent = 'Plank removed! Keep going.';
+    document.getElementById('hintText').textContent = 'Plank removed! Tap next screw.';
     setTimeout(checkWin, 500);
   } else {
-    document.getElementById('hintText').textContent = remaining + ' screw(s) left on this plank. Select another screw.';
+    document.getElementById('hintText').textContent = remaining + ' screw(s) left on this plank. Tap next screw.';
   }
 }
 function checkWin() {
@@ -254,14 +252,10 @@ function closeWinAndNext() {
 }
 function nextLevel() {
   if (currentLevel < unlocked) { currentLevel = currentLevel + 1; moves = 0; loadLevel(); }
-  else if (currentLevel === unlocked && document.querySelectorAll('#board .screw').length === 0) { unlocked = unlocked + 1; save(); currentLevel = currentLevel + 1; moves = 0; loadLevel(); }
   else { alert('Complete this level to unlock next!'); }
 }
 function restartLevel() { moves = 0; loadLevel(); }
-function undoMove() {
-  if (history.length === 0) { alert('Nothing to undo'); return; }
-  if (confirm('Undo will restart this level. Continue?')) { restartLevel(); }
-}
+function undoMove() { if (confirm('Undo will restart this level. Continue?')) { restartLevel(); } }
 function showHow() { document.getElementById('howModal').classList.add('show'); }
 function closeHow() { document.getElementById('howModal').classList.remove('show'); }
 loadLevel();
