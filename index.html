@@ -1,264 +1,702 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ScrewCraft - Wood Screw Puzzle</title>
-<style>
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#2b1a0e;color:#fff;overflow-x:hidden}
-  .topbar{background:#1a0f07;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-  .logo{font-weight:900;font-size:20px}.logo span{color:#ffb347}
-  .stats{display:flex;gap:8px;font-size:13px}
-  .pill{background:#3a2412;border:1px solid #6b4420;padding:6px 10px;border-radius:20px}
-  .wrap{max-width:520px;margin:0 auto;padding:14px 12px 20px}
-  .levelbar{display:flex;justify-content:space-between;align-items:center;margin:10px 2px}
-  .levelbar h2{margin:0;font-size:22px}
-  .levelbar p{margin:2px 0 0;color:#d8b48f;font-size:13px}
-  .btn{background:#ffb347;color:#2b1a0e;border:none;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}
-  .btn.secondary{background:#4a2f18;color:#fff;border:1px solid #6b4420}
-  .board{position:relative;height:440px;border-radius:20px;overflow:hidden;background:linear-gradient(145deg,#a9743c,#7a4a1f 55%,#5e3512);border:6px solid #3a1f08;box-shadow:0 12px 30px rgba(0,0,0,.5)}
-  .hint-text{text-align:center;color:#ffe2b8;font-size:13px;margin:10px 0 6px}
-  .plank{position:absolute;border-radius:14px;border:3px solid rgba(0,0,0,.35);box-shadow:0 6px 14px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;transition:all .5s ease;pointer-events:none}
-  .plank.removing{transform:translateY(120px) rotate(8deg);opacity:0}
-  .plank-label{font-weight:900;letter-spacing:1px;text-shadow:0 1px 2px rgba(0,0,0,.5);opacity:.9}
-  .hole{position:absolute;width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #2a1506, #0f0702 70%);border:3px solid #1a0c03;box-shadow:inset 0 3px 6px #000;z-index:1;pointer-events:none}
-  .screw{position:absolute;width:48px;height:48px;border-radius:50%;z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 32% 28%, #ffffff, #c8ccd2 28%, #7a7f88 55%, #3a3d44 85%);border:2px solid #222;box-shadow:0 4px 8px rgba(0,0,0,.55);transition:all .35s ease;touch-action:manipulation}
-  .screw::before{content:"";position:absolute;width:22px;height:4px;background:#222;border-radius:4px;transform:rotate(35deg)}
-  .screw::after{content:"";position:absolute;width:8px;height:8px;background:#eee;border-radius:50%;border:1px solid #555}
-  .screw.selected{outline:3px solid #ffe600;outline-offset:2px;transform:scale(1.18) translateY(-8px)}
-  .screw.flying{transition:all .45s ease;z-index:20;transform:scale(1.1) rotate(180deg)}
-  .tray-screw{width:34px;height:34px;border-radius:50%;position:relative;background:radial-gradient(circle at 32% 28%, #ffffff, #c8ccd2 28%, #7a7f88 55%, #3a3d44 85%);border:2px solid #222;display:flex;align-items:center;justify-content:center}
-  .tray-screw::before{content:"";position:absolute;width:18px;height:4px;background:#222;border-radius:4px;transform:rotate(35deg)}
-  .tray-screw::after{content:"";position:absolute;width:7px;height:7px;background:#eee;border-radius:50%;border:1px solid #555}
-  .tray{margin-top:14px;background:#1a0f07;border:2px solid #4a2f18;border-radius:16px;padding:12px}
-  .tray h3{margin:0 0 8px;font-size:14px;color:#ffcf8a}
-  .tray-holes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-  .tray-hole{width:48px;height:48px;border-radius:50%;background:#0f0702;border:3px dashed #6b4420;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
-  .tray-hole.filled{border-style:solid;border-color:#ffb347}
-  .controls{display:flex;gap:10px;margin-top:14px}
-  .controls .btn{flex:1}
-  .levels{margin-top:16px;background:#1a0f07;border-radius:16px;padding:12px;border:1px solid #3a2412}
-  .levels h3{margin:0 0 10px}
-  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-  .lvl{padding:10px 0;text-align:center;border-radius:10px;background:#2e1a0a;border:1px solid #4a2f18;cursor:pointer;font-weight:800}
-  .lvl.active{background:#ffb347;color:#2b1a0e}
-  .lvl.locked{opacity:.35;cursor:not-allowed}
-  .lvl.done{background:#1e7a3a;color:#fff}
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:99;padding:16px}
-  .modal.show{display:flex}
-  .card{background:#fff;color:#222;border-radius:20px;padding:22px;text-align:center;max-width:340px;width:100%}
-  .card h2{margin:0 0 6px}.card p{color:#555}
-  @media(max-width:480px){.board{height:400px}.screw{width:44px;height:44px}.hole{width:32px;height:32px}}
-</style>
-</head>
-<body>
-<div class="topbar">
-  <div class="logo">SCREW<span>CRAFT</span></div>
-  <div class="stats"><span class="pill">Score: <span id="score">0</span></span><span class="pill">Moves: <span id="moves">0</span></span></div>
-</div>
-<div class="wrap">
-  <div class="levelbar">
-    <div><h2 id="levelTitle">Level 1</h2><p id="levelDesc">Easy - Remove all planks</p></div>
-    <button class="btn secondary" onclick="showHow()">How to Play</button>
-  </div>
-  <div class="hint-text" id="hintText">Tap any screw - it will auto-move to tray</div>
-  <div class="board" id="board"></div>
-  <div class="tray">
-    <h3>Screw Tray - Screws auto-move here</h3>
-    <div class="tray-holes" id="trayHoles"></div>
-  </div>
-  <div class="controls">
-    <button class="btn secondary" onclick="undoMove()">Undo</button>
-    <button class="btn secondary" onclick="restartLevel()">Restart</button>
-    <button class="btn" onclick="nextLevel()">Next</button>
-  </div>
-  <div class="levels">
-    <h3>All Levels <span style="font-weight:400;font-size:12px;color:#aaa">(Progress Saved)</span></h3>
-    <div class="grid" id="levelGrid"></div>
-  </div>
-</div>
-<div class="modal" id="winModal">
-  <div class="card">
-    <div style="font-size:48px">🎉</div>
-    <h2>Level Complete!</h2>
-    <p id="winText">Great job! Next level unlocked.</p>
-    <button class="btn" style="width:100%;margin-top:10px" onclick="closeWinAndNext()">Play Next Level</button>
-  </div>
-</div>
-<div class="modal" id="howModal">
-  <div class="card">
-    <h2>How to Play</h2>
-    <p style="text-align:left;line-height:1.6">1. Just TAP any screw.<br>2. It will auto-fly to empty tray hole.<br>3. When all screws of a plank are removed, plank falls.<br>4. Remove all planks to win.</p>
-    <button class="btn" style="width:100%" onclick="closeHow()">Got It</button>
-  </div>
-</div>
-<script>
-var LEVELS = [
-  {name:"Warm Up",desc:"Easy - 2 Planks",planks:[{x:20,y:50,w:260,h:90,color:"#e74c3c",label:"A"},{x:40,y:190,w:220,h:90,color:"#3498db",label:"B"}]},
-  {name:"Double Trouble",desc:"Easy - 3 Planks",planks:[{x:15,y:30,w:200,h:80,color:"#f1c40f",label:"A"},{x:120,y:140,w:220,h:80,color:"#2ecc71",label:"B"},{x:30,y:250,w:240,h:80,color:"#9b59b6",label:"C"}]},
-  {name:"Cross Wood",desc:"Easy - 3 Planks Vertical",planks:[{x:30,y:30,w:110,h:260,color:"#e67e22",label:"A"},{x:170,y:30,w:110,h:260,color:"#1abc9c",label:"B"},{x:20,y:310,w:280,h:70,color:"#e74c3c",label:"C"}]},
-  {name:"Stacked",desc:"Medium - 4 Planks",planks:[{x:20,y:20,w:280,h:70,color:"#3498db",label:"A"},{x:20,y:105,w:230,h:70,color:"#f39c12",label:"B"},{x:60,y:190,w:240,h:70,color:"#e74c3c",label:"C"},{x:20,y:275,w:260,h:70,color:"#2ecc71",label:"D"}]},
-  {name:"Zig Zag",desc:"Medium - 4 Planks",planks:[{x:10,y:30,w:180,h:75,color:"#9b59b6",label:"A"},{x:140,y:120,w:180,h:75,color:"#3498db",label:"B"},{x:10,y:210,w:180,h:75,color:"#f1c40f",label:"C"},{x:140,y:300,w:180,h:75,color:"#e67e22",label:"D"}]},
-  {name:"Tower",desc:"Medium - 5 Planks",planks:[{x:100,y:15,w:120,h:65,color:"#e74c3c",label:"A"},{x:40,y:90,w:240,h:65,color:"#3498db",label:"B"},{x:100,y:165,w:120,h:65,color:"#f1c40f",label:"C"},{x:40,y:240,w:240,h:65,color:"#2ecc71",label:"D"},{x:100,y:315,w:120,h:65,color:"#9b59b6",label:"E"}]},
-  {name:"Diamond",desc:"Medium - 5 Planks",planks:[{x:90,y:15,w:140,h:65,color:"#1abc9c",label:"A"},{x:20,y:90,w:140,h:65,color:"#e74c3c",label:"B"},{x:170,y:90,w:140,h:65,color:"#f39c12",label:"C"},{x:20,y:190,w:140,h:65,color:"#3498db",label:"D"},{x:90,y:280,w:140,h:65,color:"#2ecc71",label:"E"}]},
-  {name:"Maze Wood",desc:"Hard - 6 Planks",planks:[{x:15,y:15,w:140,h:60,color:"#e74c3c",label:"A"},{x:180,y:15,w:140,h:60,color:"#3498db",label:"B"},{x:15,y:95,w:140,h:60,color:"#f1c40f",label:"C"},{x:180,y:95,w:140,h:60,color:"#2ecc71",label:"D"},{x:15,y:175,w:140,h:60,color:"#9b59b6",label:"E"},{x:90,y:260,w:160,h:60,color:"#e67e22",label:"F"}]},
-  {name:"Checker",desc:"Hard - 6 Planks",planks:[{x:20,y:20,w:120,h:110,color:"#e74c3c",label:"A"},{x:180,y:20,w:120,h:110,color:"#3498db",label:"B"},{x:20,y:150,w:120,h:110,color:"#f1c40f",label:"C"},{x:180,y:150,w:120,h:110,color:"#2ecc71",label:"D"},{x:20,y:280,w:120,h:110,color:"#9b59b6",label:"E"},{x:180,y:280,w:120,h:110,color:"#1abc9c",label:"F"}]},
-  {name:"Pro Builder",desc:"Hard - 7 Planks",planks:[{x:15,y:15,w:90,h:120,color:"#e74c3c",label:"A"},{x:125,y:15,w:90,h:120,color:"#3498db",label:"B"},{x:235,y:15,w:90,h:120,color:"#f1c40f",label:"C"},{x:15,y:155,w:90,h:120,color:"#2ecc71",label:"D"},{x:125,y:155,w:90,h:120,color:"#9b59b6",label:"E"},{x:235,y:155,w:90,h:120,color:"#e67e22",label:"F"},{x:70,y:295,w:200,h:60,color:"#1abc9c",label:"G"}]},
-  {name:"Expert 11",desc:"Expert - 7 Planks Small",planks:[{x:10,y:10,w:150,h:55,color:"#e74c3c",label:"A"},{x:170,y:10,w:150,h:55,color:"#3498db",label:"B"},{x:10,y:80,w:150,h:55,color:"#f1c40f",label:"C"},{x:170,y:80,w:150,h:55,color:"#2ecc71",label:"D"},{x:10,y:150,w:150,h:55,color:"#9b59b6",label:"E"},{x:170,y:150,w:150,h:55,color:"#e67e22",label:"F"},{x:80,y:230,w:170,h:55,color:"#1abc9c",label:"G"}]},
-  {name:"Master 12",desc:"Expert - 8 Planks",planks:[{x:10,y:10,w:100,h:70,color:"#e74c3c",label:"A"},{x:120,y:10,w:100,h:70,color:"#3498db",label:"B"},{x:230,y:10,w:100,h:70,color:"#f1c40f",label:"C"},{x:10,y:95,w:100,h:70,color:"#2ecc71",label:"D"},{x:120,y:95,w:100,h:70,color:"#9b59b6",label:"E"},{x:230,y:95,w:100,h:70,color:"#e67e22",label:"F"},{x:10,y:180,w:150,h:70,color:"#1abc9c",label:"G"},{x:180,y:180,w:150,h:70,color:"#8e44ad",label:"H"}]},
-  {name:"Master 13",desc:"Expert - 8 Planks Mixed",planks:[{x:20,y:10,w:290,h:55,color:"#e74c3c",label:"A"},{x:20,y:75,w:140,h:55,color:"#3498db",label:"B"},{x:180,y:75,w:140,h:55,color:"#f1c40f",label:"C"},{x:20,y:140,w:140,h:55,color:"#2ecc71",label:"D"},{x:180,y:140,w:140,h:55,color:"#9b59b6",label:"E"},{x:20,y:205,w:140,h:55,color:"#e67e22",label:"F"},{x:180,y:205,w:140,h:55,color:"#1abc9c",label:"G"},{x:70,y:270,w:190,h:55,color:"#34495e",label:"H"}]},
-  {name:"Legend 14",desc:"Legend - 9 Planks",planks:[{x:10,y:8,w:100,h:60,color:"#e74c3c",label:"A"},{x:120,y:8,w:100,h:60,color:"#3498db",label:"B"},{x:230,y:8,w:100,h:60,color:"#f1c40f",label:"C"},{x:10,y:80,w:100,h:60,color:"#2ecc71",label:"D"},{x:120,y:80,w:100,h:60,color:"#9b59b6",label:"E"},{x:230,y:80,w:100,h:60,color:"#e67e22",label:"F"},{x:10,y:152,w:100,h:60,color:"#1abc9c",label:"G"},{x:120,y:152,w:100,h:60,color:"#34495e",label:"H"},{x:230,y:152,w:100,h:60,color:"#c0392b",label:"I"}]},
-  {name:"Final Boss",desc:"Legend - 10 Planks",planks:[{x:10,y:5,w:95,h:55,color:"#e74c3c",label:"A"},{x:115,y:5,w:95,h:55,color:"#3498db",label:"B"},{x:220,y:5,w:95,h:55,color:"#f1c40f",label:"C"},{x:10,y:70,w:95,h:55,color:"#2ecc71",label:"D"},{x:115,y:70,w:95,h:55,color:"#9b59b6",label:"E"},{x:220,y:70,w:95,h:55,color:"#e67e22",label:"F"},{x:10,y:135,w:95,h:55,color:"#1abc9c",label:"G"},{x:115,y:135,w:95,h:55,color:"#34495e",label:"H"},{x:220,y:135,w:95,h:55,color:"#c0392b",label:"I"},{x:60,y:200,w:200,h:55,color:"#d35400",label:"J"}]}
-];
-var currentLevel = parseInt(localStorage.getItem('screwcraft_level') || '0');
-var unlocked = parseInt(localStorage.getItem('screwcraft_unlocked') || '0');
-var score = parseInt(localStorage.getItem('screwcraft_score') || '0');
-var moves = 0;
-var isMoving = false;
-function save() { localStorage.setItem('screwcraft_level', currentLevel); localStorage.setItem('screwcraft_unlocked', unlocked); localStorage.setItem('screwcraft_score', score); }
-function renderLevelGrid() {
-  var g = document.getElementById('levelGrid');
-  g.innerHTML = '';
-  for (var i = 0; i < LEVELS.length; i++) {
-    var d = document.createElement('div');
-    var cls = 'lvl';
-    if (i === currentLevel) { cls = cls + ' active'; }
-    if (i > unlocked) { cls = cls + ' locked'; }
-    if (i < unlocked) { cls = cls + ' done'; }
-    d.className = cls;
-    if (i <= unlocked) { d.textContent = '' + (i + 1); } else { d.textContent = 'Locked ' + (i + 1); }
-    (function(index) { d.onclick = function() { if (index <= unlocked) { currentLevel = index; moves = 0; loadLevel(); } }; })(i);
-    g.appendChild(d);
-  }
-}
-function loadLevel() {
-  var lvl = LEVELS[currentLevel];
-  document.getElementById('levelTitle').textContent = 'Level ' + (currentLevel + 1) + ' - ' + lvl.name;
-  document.getElementById('levelDesc').textContent = lvl.desc;
-  document.getElementById('moves').textContent = moves;
-  document.getElementById('score').textContent = score;
-  document.getElementById('hintText').textContent = 'Tap any screw - it will auto-move to tray';
-  isMoving = false;
-  var board = document.getElementById('board');
-  board.innerHTML = '';
-  var trayCount = lvl.planks.length * 2;
-  var tray = document.getElementById('trayHoles');
-  tray.innerHTML = '';
-  for (var ti = 0; ti < trayCount; ti++) {
-    var h = document.createElement('div');
-    h.className = 'tray-hole';
-    h.setAttribute('data-empty', '1');
-    tray.appendChild(h);
-  }
-  for (var pi = 0; pi < lvl.planks.length; pi++) {
-    var p = lvl.planks[pi];
-    var el = document.createElement('div');
-    el.className = 'plank';
-    el.id = 'plank-' + pi;
-    el.style.left = p.x + 'px';
-    el.style.top = p.y + 'px';
-    el.style.width = p.w + 'px';
-    el.style.height = p.h + 'px';
-    el.style.background = 'linear-gradient(180deg, ' + p.color + ', ' + p.color + ')';
-    var lbl = document.createElement('span');
-    lbl.className = 'plank-label';
-    lbl.textContent = p.label;
-    el.appendChild(lbl);
-    board.appendChild(el);
-    var isWide = p.w >= p.h;
-    var pos1, pos2;
-    if (isWide) { pos1 = {x: p.x + 14, y: p.y + p.h / 2 - 20}; pos2 = {x: p.x + p.w - 54, y: p.y + p.h / 2 - 20}; }
-    else { pos1 = {x: p.x + p.w / 2 - 20, y: p.y + 10}; pos2 = {x: p.x + p.w / 2 - 20, y: p.y + p.h - 50}; }
-    var positions = [pos1, pos2];
-    for (var si = 0; si < positions.length; si++) {
-      var pos = positions[si];
-      var hole = document.createElement('div');
-      hole.className = 'hole';
-      hole.style.left = (pos.x + 2) + 'px';
-      hole.style.top = (pos.y + 2) + 'px';
-      board.appendChild(hole);
-      var s = document.createElement('div');
-      s.className = 'screw';
-      s.setAttribute('data-plank', pi);
-      s.style.left = pos.x + 'px';
-      s.style.top = pos.y + 'px';
-      (function(screwEl) {
-        screwEl.onclick = function(e) { e.stopPropagation(); moveScrew(screwEl); };
-        screwEl.ontouchstart = function(e) { e.preventDefault(); moveScrew(screwEl); };
-      })(s);
-      board.appendChild(s);
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ScrewCraft PREMIUM - Wood Screw Puzzle</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent
     }
-  }
-  renderLevelGrid();
-  save();
-}
-function moveScrew(s) {
-  if (isMoving) { return; }
-  if (!s || !s.parentNode) { return; }
-  var holes = document.querySelectorAll('.tray-hole');
-  var targetHole = null;
-  for (var i = 0; i < holes.length; i++) {
-    if (holes[i].getAttribute('data-empty') === '1') { targetHole = holes[i]; break; }
-  }
-  if (!targetHole) { document.getElementById('hintText').textContent = 'Tray is full!'; return; }
-  isMoving = true;
-  var plankIdx = parseInt(s.getAttribute('data-plank'));
-  s.classList.add('selected');
-  s.classList.add('flying');
-  targetHole.setAttribute('data-empty', '0');
-  targetHole.classList.add('filled');
-  var finalHole = targetHole;
-  setTimeout(function() {
-    if (s.parentNode) { s.remove(); }
-    var clone = document.createElement('div');
-    clone.className = 'tray-screw';
-    finalHole.appendChild(clone);
-    moves = moves + 1;
-    score = score + 10;
-    document.getElementById('moves').textContent = moves;
-    document.getElementById('score').textContent = score;
-    isMoving = false;
-    checkPlankComplete(plankIdx);
-    save();
-  }, 300);
-}
-function checkPlankComplete(pi) {
-  var remaining = document.querySelectorAll('#board .screw[data-plank="' + pi + '"]').length;
-  if (remaining === 0) {
-    var plank = document.getElementById('plank-' + pi);
-    if (plank) { plank.classList.add('removing'); }
-    document.getElementById('hintText').textContent = 'Plank removed! Tap next screw.';
-    setTimeout(checkWin, 500);
-  } else {
-    document.getElementById('hintText').textContent = remaining + ' screw(s) left on this plank. Tap next screw.';
-  }
-}
-function checkWin() {
-  if (document.querySelectorAll('#board .screw').length === 0) {
-    score = score + 100;
-    document.getElementById('score').textContent = score;
-    if (currentLevel >= unlocked && currentLevel < LEVELS.length - 1) { unlocked = currentLevel + 1; }
-    if (currentLevel === LEVELS.length - 1) { document.getElementById('winText').textContent = 'You completed ALL 15 levels! You are a Legend!'; }
-    else { document.getElementById('winText').textContent = 'Level ' + (currentLevel + 1) + ' complete! +100 bonus. Level ' + (currentLevel + 2) + ' unlocked.'; }
-    save();
-    renderLevelGrid();
-    document.getElementById('winModal').classList.add('show');
-  }
-}
-function closeWinAndNext() {
-  document.getElementById('winModal').classList.remove('show');
-  if (currentLevel < LEVELS.length - 1) { currentLevel = currentLevel + 1; moves = 0; loadLevel(); }
-}
-function nextLevel() {
-  if (currentLevel < unlocked) { currentLevel = currentLevel + 1; moves = 0; loadLevel(); }
-  else { alert('Complete this level to unlock next!'); }
-}
-function restartLevel() { moves = 0; loadLevel(); }
-function undoMove() { if (confirm('Undo will restart this level. Continue?')) { restartLevel(); } }
-function showHow() { document.getElementById('howModal').classList.add('show'); }
-function closeHow() { document.getElementById('howModal').classList.remove('show'); }
-loadLevel();
-</script>
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', system-ui, Arial, sans-serif;
+      background: radial-gradient(ellipse at 50% 0%, #3a2410 0%, #170d05 55%, #0d0602 100%);
+      color: #fff;
+      overflow-x: hidden;
+      min-height: 100vh
+    }
+
+    .topbar {
+      background: rgba(20, 10, 4, .85);
+      backdrop-filter: blur(12px);
+      padding: 11px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .6);
+      border-bottom: 1px solid rgba(255, 179, 71, .25)
+    }
+
+    .logo {
+      font-weight: 900;
+      font-size: 21px;
+      letter-spacing: 1px
+    }
+
+    .logo span {
+      background: linear-gradient(90deg, #ffc65c, #ff8a00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .logo small {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: #c99a68;
+      font-weight: 700
+    }
+
+    .stats {
+      display: flex;
+      gap: 6px;
+      align-items: center
+    }
+
+    .pill {
+      background: linear-gradient(180deg, #3a2412, #241104);
+      border: 1px solid #6b4420;
+      padding: 7px 9px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 800;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .4)
+    }
+
+    .sound-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid #ffb347;
+      background: #2e1a0a;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .wrap {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 12px 12px 24px
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(255, 179, 71, .18), rgba(255, 138, 0, .05));
+      border: 1px solid rgba(255, 179, 71, .35);
+      border-radius: 18px;
+      padding: 13px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .35)
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: 19px
+    }
+
+    .hero p {
+      margin: 3px 0 0;
+      color: #ffcf8a;
+      font-size: 12px
+    }
+
+    .progress {
+      height: 6px;
+      background: #2e1a0a;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0 0
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ffc65c, #ff6b00);
+      width: 8%;
+      transition: width .5s;
+      border-radius: 10px
+    }
+
+    .btn {
+      background: linear-gradient(180deg, #ffc65c, #ff8a00);
+      color: #2b1400;
+      border: none;
+      padding: 11px 13px;
+      border-radius: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #a85f00, 0 6px 14px rgba(255, 138, 0, .35)
+    }
+
+    .btn:active {
+      transform: translateY(2px)
+    }
+
+    .btn.secondary {
+      background: rgba(46, 26, 10, .9);
+      color: #ffe2b8;
+      border: 1px solid #6b4420;
+      box-shadow: 0 3px 0 #000
+    }
+
+    .hint {
+      background: rgba(36, 17, 4, .9);
+      border: 1px solid rgba(255, 179, 71, .25);
+      border-radius: 12px;
+      padding: 9px 10px;
+      text-align: center;
+      color: #ffe2b8;
+      font-size: 13px;
+      margin: 12px 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .3)
+    }
+
+    .board {
+      position: relative;
+      height: 460px;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 7px solid #2e1706;
+      box-shadow: 0 18px 36px rgba(0, 0, 0, .6), inset 0 0 0 2px #7a4a1f, 0 0 0 1px rgba(255, 179, 71, .2);
+      touch-action: manipulation;
+      background: repeating-linear-gradient(90deg, rgba(0, 0, 0, .08) 0 2px, transparent 2px 72px), repeating-linear-gradient(0deg, rgba(255, 255, 255, .04) 0 2px, transparent 2px 18px), radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, .12), transparent 50%), linear-gradient(145deg, #c08245, #8a5424 45%, #6b3d16 70%, #7a4a1f)
+    }
+
+    .plank {
+      position: absolute;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform .6s cubic-bezier(.2, .9, .3, 1), opacity .6s;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, .55), inset 0 2px 0 rgba(255, 255, 255, .5), inset 0 -6px 0 rgba(0, 0, 0, .3), inset 2px 0 0 rgba(255, 255, 255, .2);
+      border: 1px solid rgba(0, 0, 0, .35);
+      pointer-events: none;
+      overflow: hidden
+    }
+
+    .plank::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .08) 0 1px, transparent 1px 14px);
+      pointer-events: none
+    }
+
+    .plank.removing {
+      transform: translateY(160px) rotate(12deg) scale(.9);
+      opacity: 0
+    }
+
+    .plank-label {
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: rgba(255, 255, 255, .95);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, .6);
+      z-index: 2
+    }
+
+    .hole {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #2a1506, #0a0501 70%);
+      border: 3px solid #140a02;
+      box-shadow: inset 0 3px 7px #000, 0 1px 0 rgba(255, 255, 255, .15);
+      z-index: 1;
+      pointer-events: none
+    }
+
+    .screw {
+      position: absolute;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 28%, #fff 0%, #eef1f4 15%, #c3c8d0 35%, #7a7f88 60%, #2f3238 92%);
+      border: 2px solid #1c1e22;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, .65), inset 0 2px 2px #fff, inset 0 -3px 4px rgba(0, 0, 0, .4), 0 0 0 1px rgba(255, 255, 255, .3);
+      touch-action: manipulation;
+      transition: transform .15s, opacity .3s, filter .3s
+    }
+
+    .screw::before {
+      content: "";
+      position: absolute;
+      width: 26px;
+      height: 5px;
+      background: linear-gradient(90deg, #333, #111);
+      border-radius: 3px;
+      transform: rotate(40deg);
+      box-shadow: 0 1px 1px rgba(255, 255, 255, .4)
+    }
+
+    .screw::after {
+      content: "";
+      position: absolute;
+      width: 26px;
+      height: 5px;
+      background: linear-gradient(90deg, #333, #111);
+      border-radius: 3px;
+      transform: rotate(-40deg)
+    }
+
+    .screw:active {
+      transform: scale(.92)
+    }
+
+    .screw.blocked {
+      filter: grayscale(1) brightness(.5);
+      cursor: not-allowed;
+      opacity: .7
+    }
+
+    .screw.blocked::after {
+      content: "🔒";
+      font-size: 14px;
+      z-index: 2;
+      background: none
+    }
+
+    .screw.available {
+      animation: pulse 1.6s infinite
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, .65), 0 0 0 0 rgba(255, 230, 0, 0)
+      }
+
+      50% {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, .65), 0 0 0 6px rgba(255, 230, 0, .3)
+      }
+    }
+
+    .screw.selected {
+      outline: 3px solid #ffe600;
+      outline-offset: 2px;
+      transform: scale(1.15)
+    }
+
+    .tray {
+      margin-top: 14px;
+      background: linear-gradient(180deg, rgba(46, 26, 10, .95), rgba(26, 14, 5, .95));
+      border: 1px solid rgba(255, 179, 71, .3);
+      border-radius: 20px;
+      padding: 12px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .45);
+      backdrop-filter: blur(10px)
+    }
+
+    .tray-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px
+    }
+
+    .tray-top h3 {
+      margin: 0;
+      font-size: 14px;
+      color: #ffcf8a
+    }
+
+    .capacity {
+      font-size: 12px;
+      font-weight: 800;
+      background: #0f0702;
+      padding: 5px 9px;
+      border-radius: 20px;
+      border: 1px solid #6b4420
+    }
+
+    .capacity.full {
+      background: #7a1a1a;
+      color: #fff;
+      animation: shake .4s
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      25% {
+        transform: translateX(-3px)
+      }
+
+      75% {
+        transform: translateX(3px)
+      }
+    }
+
+    .bar {
+      height: 8px;
+      background: #0f0702;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid #3a2412
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ffc65c, #ff6b00, #ff2a00);
+      width: 0%;
+      transition: width .4s
+    }
+
+    .tray-holes {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap
+    }
+
+    .tray-hole {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #2a1506, #0a0501 75%);
+      border: 3px dashed #7a4a1f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .3s;
+      box-shadow: inset 0 3px 8px #000
+    }
+
+    .tray-hole.filled {
+      border-style: solid;
+      border-color: #ffb347;
+      box-shadow: 0 0 12px rgba(255, 179, 71, .6), inset 0 3px 8px #000
+    }
+
+    .tray-screw {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      position: relative;
+      background: radial-gradient(circle at 30% 28%, #fff, #c8ccd2 30%, #7a7f88 60%, #2f3238 95%);
+      border: 2px solid #222;
+      animation: pop .4s cubic-bezier(.2, 1.5, .4, 1);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, .5)
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(.3) rotate(-120deg)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .tray-screw::before {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 4px;
+      background: #222;
+      border-radius: 4px;
+      transform: rotate(40deg);
+      left: 7px;
+      top: 15px
+    }
+
+    .tray-screw::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 4px;
+      background: #222;
+      border-radius: 4px;
+      transform: rotate(-40deg);
+      left: 7px;
+      top: 15px
+    }
+
+    .fly-screw {
+      position: fixed;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      z-index: 100;
+      pointer-events: none;
+      background: radial-gradient(circle at 30% 28%, #fff, #c8ccd2 30%, #7a7f88 60%, #2f3238 95%);
+      border: 2px solid #222;
+      transition: all .5s cubic-bezier(.3, .8, .3, 1);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, .5)
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px
+    }
+
+    .controls .btn {
+      flex: 1
+    }
+
+    .levels {
+      margin-top: 16px;
+      background: rgba(26, 15, 7, .9);
+      border-radius: 18px;
+      padding: 12px;
+      border: 1px solid rgba(255, 179, 71, .2)
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px
+    }
+
+    .lvl {
+      padding: 11px 0;
+      text-align: center;
+      border-radius: 12px;
+      background: #2e1a0a;
+      border: 1px solid #4a2f18;
+      cursor: pointer;
+      font-weight: 800;
+      transition: all .15s
+    }
+
+    .lvl:active {
+      transform: scale(.94)
+    }
+
+    .lvl.active {
+      background: linear-gradient(180deg, #ffc65c, #ff8a00);
+      color: #2b1a0e;
+      box-shadow: 0 0 14px rgba(255, 179, 71, .7)
+    }
+
+    .lvl.locked {
+      opacity: .35
+    }
+
+    .lvl.done {
+      background: #1e7a3a
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .82);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+      padding: 16px;
+      backdrop-filter: blur(4px)
+    }
+
+    .modal.show {
+      display: flex
+    }
+
+    .card {
+      background: linear-gradient(180deg, #fff, #ffeecf);
+      color: #222;
+      border-radius: 24px;
+      padding: 26px;
+      text-align: center;
+      max-width: 340px;
+      width: 100%;
+      animation: pop .45s cubic-bezier(.2, 1.4, .4, 1);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, .6)
+    }
+
+    .confetti {
+      position: fixed;
+      top: -10px;
+      width: 10px;
+      height: 16px;
+      z-index: 101;
+      pointer-events: none;
+      animation: fall 2.4s linear forwards;
+      border-radius: 2px
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0
+      }
+    }
+
+    @media(max-width:480px) {
+      .board {
+        height: 420px
+      }
+
+      .screw {
+        width: 44px;
+        height: 44px
+      }
+
+      .tray-hole {
+        width: 46px;
+        height: 46px
+      }
+
+      .grid {
+        grid-template-columns: repeat(6, 1fr)
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="logo">SCREW<span>CRAFT</span><small>PREMIUM EDITION</small></div>
+    <div class="stats"><span class="pill">⭐ <span id="score">0</span></span><span class="pill">🎯 <span
+          id="moves">0</span></span><button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊</button></div>
+  </div>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <h2 id="levelTitle">Level 1</h2>
+        <p id="levelDesc"></p>
+        <div class="progress">
+          <div class="progress-fill" id="levelProgress"></div>
+        </div>
+      </div><button class="btn secondary" onclick="showHow()">How to Play</button>
+    </div>
+    <div class="hint" id="hintText">👆 Tap glowing screw. 🔒 = Blocked by top plank</div>
+    <div class="board" id="board"></div>
+    <div class="tray">
+      <div class="tray-top">
+        <h3>🧰 Screw Tray</h3><span class="capacity" id="capLabel">Tray: 0 / 5</span>
+      </div>
+      <div class="bar">
+        <div class="bar-fill" id="barFill"></div>
+      </div>
+      <div class="tray-holes" id="trayHoles"></div>
+      <p style="margin:8px 0 0;font-size:12px;color:#c99a68;text-align:center">Tray holds 5. Finish a plank to clear its
+        screws.</p>
+    </div>
+    <div class="controls"><button class="btn secondary" onclick="restartLevel()">🔄 Restart</button><button
+        class="btn secondary" onclick="showHint()">💡 Hint</button><button class="btn" onclick="nextLevel()">Next
+        ➜</button></div>
+    <div class="levels">
+      <h3 style="margin:0 0 10px">All Levels <span style="font-weight:400;font-size:12px;color:#aaa">(Progress Saved •
+          Sound ON)</span></h3>
+      <div class="grid" id="levelGrid"></div>
+    </div>
+  </div>
+  <div class="modal" id="winModal">
+    <div class="card">
+      <div style="font-size:56px">🏆</div>
+      <h2>Level Complete!</h2>
+      <p id="winText"></p>
+      <p style="font-weight:900;color:#b36b00;font-size:18px" id="winScore"></p><button class="btn"
+        style="width:100%;margin-top:10px" onclick="closeWinAndNext()">Play Next Level ➜</button>
+    </div>
+  </div>
+  <div class="modal" id="overModal">
+    <div class="card">
+      <div style="font-size:52px">😢</div>
+      <h2>Tray Full - Game Over!</h2>
+      <p>Your tray is full. Try a different order - remove top planks first.</p><button class="btn"
+        style="width:100%;margin-top:10px" onclick="closeOverAndRestart()">🔄 Restart Level</button>
+    </div>
+  </div>
+  <div class="modal" id="howModal">
+    <div class="card">
+      <h2>How to Play</h2>
+      <p style="text-align:left;line-height:1.7">1. <b>Glowing screw = FREE</b> - tap it.<br>2. <b>🔒 Grey screw =
+          BLOCKED</b> by plank on top.<br>3. Screw flies to tray with sound.<br>4. Finish a plank to clear its tray
+        screws.<br>5. Don't fill tray to 5.<br>6. 🔊 Tap sound icon to mute.</p><button class="btn" style="width:100%"
+        onclick="closeHow()">Got It</button>
+    </div>
+  </div>
+  <script>
+    var TRAY_MAX = 5;
+    var soundOn = localStorage.getItem('screwcraft_sound') !== 'off';
+    var audioCtx = null;
+    function getCtx() { if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { } } if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); } return audioCtx; }
+    function tone(freq, dur, type, vol, when, slide) {
+      if (!soundOn) return; var ctx = getCtx(); if (!ctx) return;
+      var o = ctx.createOscillator(); var g = ctx.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(freq, ctx.currentTime + (when || 0));
+      if (slide) { o.frequency.exponentialRampToValueAtTime(slide, ctx.currentTime + (when || 0) + dur); }
+      g.gain.setValueAtTime(vol || 0.18, ctx.currentTime + (when || 0)); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (when || 0) + dur);
+      o.connect(g); g.connect(ctx.destination); o.start(ctx.currentTime + (when || 0)); o.stop(ctx.currentTime + (when || 0) + dur + 0.02);
+    }
+    function playScrew() { tone(900, 0.08, 'square', 0.08, 0, 300); tone(1400, 0.06, 'sine', 0.1, 0.05); }
+    function playFly() { tone(400, 0.35, 'sine', 0.12, 0, 1200); }
+    function playPlank() { tone(180, 0.25, 'sine', 0.28, 0, 60); tone(90, 0.3, 'triangle', 0.25, 0.05, 40); }
+    function playClick() { tone(700, 0.06, 'sine', 0.12, 0); }
+    function playBlocked() { tone(180, 0.15, 'square', 0.12, 0); tone(140, 0.15, 'square', 0.12, 0.12); }
+    function playWin() { [523, 659, 784, 1046].forEach(function (f, i) { tone(f, 0.25, 'triangle', 0.2, i * 0.13); }); tone(1568, 0.5, 'sine', 0.12, 0.55); }
+    function playOver() { [400, 300, 200, 120].forEach(function (f, i) { tone(f, 0.3, 'sawtooth', 0.1, i * 0.18); }); }
+    function toggleSound() { soundOn = !soundOn; localStorage.setItem('screwcraft_sound', soundOn ? 'on' : 'off'); document.getElementById('soundBtn').textContent = soundOn ? '🔊' : '🔇'; if (soundOn) playClick(); }
+    document.addEventListener('DOMContentLoaded', function () { document.getElementById('soundBtn').textContent = soundOn ? '🔊' : '🔇'; });
+    var LEVELS = [
+      { name: "First Cut", diff: "Easy • 2 Planks • Learn Blocking", planks: [{ x: 25, y: 180, w: 250, h: 90, color: "#e74c3c", label: "B", z: 1 }, { x: 35, y: 60, w: 240, h: 90, color: "#3498db", label: "A", z: 2 }] },
+      { name: "Cross Lock", diff: "Easy • 3 Planks • Vertical Blocks", planks: [{ x: 25, y: 30, w: 120, h: 260, color: "#e67e22", label: "A", z: 1 }, { x: 175, y: 30, w: 120, h: 260, color: "#1abc9c", label: "B", z: 1 }, { x: 25, y: 320, w: 270, h: 70, color: "#e74c3c", label: "C", z: 2 }] },
+      { name: "Stack Tower", diff: "Easy • 3 Planks • Stacked", planks: [{ x: 30, y: 260, w: 260, h: 80, color: "#2ecc71", label: "C", z: 1 }, { x: 30, y: 150, w: 260, h: 80, color: "#f1c40f", label: "B", z: 2 }, { x: 30, y: 40, w: 260, h: 80, color: "#9b59b6", label: "A", z: 3 }] },
+      { name: "Zig Zag Trap", diff: "Medium • 4 Planks • Zig Zag", planks: [{ x: 10, y: 30, w: 180, h: 75, color: "#9b59b6", label: "A", z: 1 }, { x: 145, y: 120, w: 180, h: 75, color: "#3498db", label: "B", z: 2 }, { x: 10, y: 210, w: 180, h: 75, color: "#f1c40f", label: "C", z: 1 }, { x: 145, y: 300, w: 180, h: 75, color: "#e67e22", label: "D", z: 2 }] },
+      { name: "Center Lock", diff: "Medium • 4 Planks • Center Key", planks: [{ x: 20, y: 20, w: 280, h: 70, color: "#3498db", label: "A", z: 1 }, { x: 20, y: 300, w: 280, h: 70, color: "#e74c3c", label: "D", z: 1 }, { x: 20, y: 110, w: 130, h: 160, color: "#f39c12", label: "B", z: 2 }, { x: 170, y: 110, w: 130, h: 160, color: "#2ecc71", label: "C", z: 2 }] },
+      { name: "Diamond Maze", diff: "Medium • 5 Planks • Diamond", planks: [{ x: 95, y: 15, w: 130, h: 65, color: "#1abc9c", label: "A", z: 1 }, { x: 20, y: 95, w: 130, h: 65, color: "#e74c3c", label: "B", z: 2 }, { x: 175, y: 95, w: 130, h: 65, color: "#f39c12", label: "C", z: 2 }, { x: 20, y: 195, w: 130, h: 65, color: "#3498db", label: "D", z: 1 }, { x: 95, y: 280, w: 130, h: 65, color: "#2ecc71", label: "E", z: 3 }] },
+      { name: "Checker Board", diff: "Hard • 6 Planks • 2x3 Grid", planks: [{ x: 20, y: 20, w: 130, h: 105, color: "#e74c3c", label: "A", z: 2 }, { x: 180, y: 20, w: 130, h: 105, color: "#3498db", label: "B", z: 1 }, { x: 20, y: 145, w: 130, h: 105, color: "#f1c40f", label: "C", z: 1 }, { x: 180, y: 145, w: 130, h: 105, color: "#2ecc71", label: "D", z: 2 }, { x: 20, y: 270, w: 130, h: 105, color: "#9b59b6", label: "E", z: 2 }, { x: 180, y: 270, w: 130, h: 105, color: "#1abc9c", label: "F", z: 1 }] },
+      { name: "Long Bridge", diff: "Hard • 6 Planks • Bridge", planks: [{ x: 15, y: 15, w: 140, h: 60, color: "#e74c3c", label: "A", z: 1 }, { x: 185, y: 15, w: 140, h: 60, color: "#3498db", label: "B", z: 1 }, { x: 15, y: 95, w: 300, h: 60, color: "#f1c40f", label: "C", z: 2 }, { x: 15, y: 175, w: 140, h: 60, color: "#2ecc71", label: "D", z: 1 }, { x: 185, y: 175, w: 140, h: 60, color: "#9b59b6", label: "E", z: 1 }, { x: 85, y: 255, w: 160, h: 60, color: "#e67e22", label: "F", z: 3 }] },
+      { name: "Pro Tower", diff: "Hard • 7 Planks • Tall Tower", planks: [{ x: 105, y: 15, w: 110, h: 55, color: "#e74c3c", label: "A", z: 3 }, { x: 45, y: 80, w: 230, h: 55, color: "#3498db", label: "B", z: 2 }, { x: 105, y: 145, w: 110, h: 55, color: "#f1c40f", label: "C", z: 1 }, { x: 45, y: 210, w: 230, h: 55, color: "#2ecc71", label: "D", z: 2 }, { x: 105, y: 275, w: 110, h: 55, color: "#9b59b6", label: "E", z: 3 }, { x: 45, y: 340, w: 110, h: 55, color: "#e67e22", label: "F", z: 1 }, { x: 170, y: 340, w: 110, h: 55, color: "#1abc9c", label: "G", z: 1 }] },
+      { name: "Expert Maze", diff: "Expert • 7 Planks • Small + Locked", planks: [{ x: 10, y: 10, w: 150, h: 55, color: "#e74c3c", label: "A", z: 2 }, { x: 170, y: 10, w: 150, h: 55, color: "#3498db", label: "B", z: 1 }, { x: 10, y: 80, w: 150, h: 55, color: "#f1c40f", label: "C", z: 1 }, { x: 170, y: 80, w: 150, h: 55, color: "#2ecc71", label: "D", z: 2 }, { x: 10, y: 150, w: 150, h: 55, color: "#9b59b6", label: "E", z: 3 }, { x: 170, y: 150, w: 150, h: 55, color: "#e67e22", label: "F", z: 1 }, { x: 80, y: 230, w: 170, h: 55, color: "#1abc9c", label: "G", z: 2 }] },
+      { name: "Master Grid", diff: "Expert • 8 Planks • 4x2 Grid", planks: [{ x: 10, y: 10, w: 100, h: 70, color: "#e74c3c", label: "A", z: 1 }, { x: 120, y: 10, w: 100, h: 70, color: "#3498db", label: "B", z: 2 }, { x: 230, y: 10, w: 100, h: 70, color: "#f1c40f", label: "C", z: 1 }, { x: 10, y: 95, w: 100, h: 70, color: "#2ecc71", label: "D", z: 2 }, { x: 120, y: 95, w: 100, h: 70, color: "#9b59b6", label: "E", z: 1 }, { x: 230, y: 95, w: 100, h: 70, color: "#e67e22", label: "F", z: 2 }, { x: 10, y: 180, w: 150, h: 70, color: "#1abc9c", label: "G", z: 3 }, { x: 180, y: 180, w: 150, h: 70, color: "#34495e", label: "H", z: 1 }] },
+      { name: "Final Boss", diff: "Legend • 8 Planks • All Locked", planks: [{ x: 10, y: 5, w: 95, h: 55, color: "#e74c3c", label: "A", z: 2 }, { x: 115, y: 5, w: 95, h: 55, color: "#3498db", label: "B", z: 1 }, { x: 220, y: 5, w: 95, h: 55, color: "#f1c40f", label: "C", z: 3 }, { x: 10, y: 70, w: 95, h: 55, color: "#2ecc71", label: "D", z: 1 }, { x: 115, y: 70, w: 95, h: 55, color: "#9b59b6", label: "E", z: 2 }, { x: 220, y: 70, w: 95, h: 55, color: "#e67e22", label: "F", z: 1 }, { x: 10, y: 135, w: 95, h: 55, color: "#1abc9c", label: "G", z: 3 }, { x: 115, y: 135, w: 95, h: 55, color: "#34495e", label: "H", z: 2 }] }
+    ];
+    var currentLevel = parseInt(localStorage.getItem('screwcraft_pro_level') || '0');
+    var unlocked = parseInt(localStorage.getItem('screwcraft_pro_unlocked') || '0');
+    var score = parseInt(localStorage.getItem('screwcraft_pro_score') || '0');
+    var moves = 0, isMoving = false, trayItems = [];
+    function save() { localStorage.setItem('screwcraft_pro_level', currentLevel); localStorage.setItem('screwcraft_pro_unlocked', unlocked); localStorage.setItem('screwcraft_pro_score', score); }
+    function updateHUD() { document.getElementById('score').textContent = score; document.getElementById('moves').textContent = moves; document.getElementById('capLabel').textContent = 'Tray: ' + trayItems.length + ' / ' + TRAY_MAX; document.getElementById('capLabel').className = 'capacity' + (trayItems.length >= TRAY_MAX ? ' full' : ''); document.getElementById('barFill').style.width = (trayItems.length / TRAY_MAX * 100) + '%'; document.getElementById('levelProgress').style.width = ((currentLevel + 1) / LEVELS.length * 100) + '%'; }
+    function renderGrid() { var g = document.getElementById('levelGrid'); g.innerHTML = ''; for (var i = 0; i < LEVELS.length; i++) { var d = document.createElement('div'); var cls = 'lvl'; if (i === currentLevel) cls += ' active'; if (i > unlocked) cls += ' locked'; if (i < unlocked) cls += ' done'; d.className = cls; d.textContent = (i <= unlocked ? '' + (i + 1) : '🔒'); (function (idx) { d.onclick = function () { if (idx <= unlocked) { playClick(); currentLevel = idx; moves = 0; loadLevel(); } }; })(i); g.appendChild(d); } }
+    function screwPos(p, idx) { var isWide = p.w >= p.h; if (isWide) { return idx === 0 ? { x: p.x + 14, y: p.y + p.h / 2 - 19 } : { x: p.x + p.w - 52, y: p.y + p.h / 2 - 19 }; } else { return idx === 0 ? { x: p.x + p.w / 2 - 19, y: p.y + 10 } : { x: p.x + p.w / 2 - 19, y: p.y + p.h - 48 }; } }
+    function isBlocked(plankIdx, screwX, screwY) { var myPlank = LEVELS[currentLevel].planks[plankIdx]; var removed = document.getElementById('plank-' + plankIdx); if (removed && removed.classList.contains('removing')) return false; for (var i = 0; i < LEVELS[currentLevel].planks.length; i++) { if (i === plankIdx) continue; var other = LEVELS[currentLevel].planks[i]; var el = document.getElementById('plank-' + i); if (!el || el.classList.contains('removing')) continue; if (other.z <= myPlank.z) continue; if (screwX + 20 >= other.x && screwX + 20 <= other.x + other.w && screwY + 20 >= other.y && screwY + 20 <= other.y + other.h) { return true; } } return false; }
+    function refreshBlocked() { var screws = document.querySelectorAll('#board .screw'); for (var i = 0; i < screws.length; i++) { var s = screws[i]; var pi = parseInt(s.getAttribute('data-plank')); var sx = parseInt(s.style.left); var sy = parseInt(s.style.top); if (isBlocked(pi, sx, sy)) { s.classList.add('blocked'); s.classList.remove('available'); } else { s.classList.remove('blocked'); s.classList.add('available'); } } }
+    function loadLevel() { var lvl = LEVELS[currentLevel]; document.getElementById('levelTitle').textContent = 'Level ' + (currentLevel + 1) + ' - ' + lvl.name; document.getElementById('levelDesc').textContent = lvl.diff; document.getElementById('hintText').textContent = '👆 Tap glowing screw. 🔒 = Blocked by top plank'; moves = 0; isMoving = false; trayItems = []; var board = document.getElementById('board'); board.innerHTML = ''; var tray = document.getElementById('trayHoles'); tray.innerHTML = ''; for (var ti = 0; ti < TRAY_MAX; ti++) { var h = document.createElement('div'); h.className = 'tray-hole'; h.id = 'tray-' + ti; tray.appendChild(h); } var sorted = lvl.planks.map(function (p, idx) { return { p: p, idx: idx }; }).sort(function (a, b) { return a.p.z - b.p.z; }); for (var sIdx = 0; sIdx < sorted.length; sIdx++) { var pi = sorted[sIdx].idx; var p = sorted[sIdx].p; var el = document.createElement('div'); el.className = 'plank'; el.id = 'plank-' + pi; el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; el.style.width = p.w + 'px'; el.style.height = p.h + 'px'; el.style.zIndex = 2 + p.z; el.style.background = 'linear-gradient(180deg,' + p.color + ',' + p.color + 'cc), repeating-linear-gradient(90deg,rgba(0,0,0,.08) 0 2px,transparent 2px 18px)'; var lbl = document.createElement('span'); lbl.className = 'plank-label'; lbl.textContent = p.label; el.appendChild(lbl); board.appendChild(el); for (var si = 0; si < 2; si++) { var pos = screwPos(p, si); var hole = document.createElement('div'); hole.className = 'hole'; hole.style.left = (pos.x + 3) + 'px'; hole.style.top = (pos.y + 3) + 'px'; hole.style.zIndex = 2 + p.z; board.appendChild(hole); var s = document.createElement('div'); s.className = 'screw'; s.setAttribute('data-plank', pi); s.style.left = pos.x + 'px'; s.style.top = pos.y + 'px'; s.style.zIndex = 10 + p.z; (function (screwEl) { screwEl.onclick = function (e) { e.stopPropagation(); moveScrew(screwEl); }; screwEl.ontouchstart = function (e) { e.preventDefault(); moveScrew(screwEl); }; })(s); board.appendChild(s); } } updateHUD(); renderGrid(); save(); refreshBlocked(); }
+    function findEmptyTray() { for (var i = 0; i < TRAY_MAX; i++) { var h = document.getElementById('tray-' + i); if (h && h.children.length === 0) return h; } return null; }
+    function moveScrew(s) { if (isMoving) return; if (!s || !s.parentNode) return; if (s.classList.contains('blocked')) { playBlocked(); document.getElementById('hintText').textContent = '🔒 Blocked! Remove the plank on top first.'; s.style.transform = 'translateX(4px)'; setTimeout(function () { s.style.transform = ''; }, 150); return; } if (trayItems.length >= TRAY_MAX) { checkGameOver(); return; } var target = findEmptyTray(); if (!target) { checkGameOver(); return; } isMoving = true; var plankIdx = parseInt(s.getAttribute('data-plank')); var rect = s.getBoundingClientRect(); var trect = target.getBoundingClientRect(); var fly = document.createElement('div'); fly.className = 'fly-screw'; fly.style.left = rect.left + 'px'; fly.style.top = rect.top + 'px'; document.body.appendChild(fly); s.style.opacity = '0'; playScrew(); playFly(); requestAnimationFrame(function () { fly.style.left = (trect.left + 7) + 'px'; fly.style.top = (trect.top + 7) + 'px'; fly.style.transform = 'rotate(540deg) scale(.8)'; }); setTimeout(function () { if (fly.parentNode) fly.remove(); if (s.parentNode) s.remove(); var clone = document.createElement('div'); clone.className = 'tray-screw'; clone.setAttribute('data-plank', plankIdx); target.appendChild(clone); target.classList.add('filled'); trayItems.push(plankIdx); moves++; score += 10; isMoving = false; updateHUD(); refreshBlocked(); checkPlankComplete(plankIdx); save(); }, 500); }
+    function checkPlankComplete(pi) { var remaining = document.querySelectorAll('#board .screw[data-plank="' + pi + '"]').length; if (remaining === 0) { var plank = document.getElementById('plank-' + pi); if (plank) plank.classList.add('removing'); playPlank(); score += 20; updateHUD(); document.getElementById('hintText').textContent = '✅ Plank ' + LEVELS[currentLevel].planks[pi].label + ' cleared! +20. Its screws cleared from tray.'; setTimeout(function () { var holes = document.querySelectorAll('.tray-hole'); for (var i = 0; i < holes.length; i++) { var child = holes[i].firstChild; if (child && parseInt(child.getAttribute('data-plank')) === pi) { holes[i].removeChild(child); holes[i].classList.remove('filled'); } } var newTray = []; for (var j = 0; j < trayItems.length; j++) { if (trayItems[j] !== pi) newTray.push(trayItems[j]); } trayItems = newTray; updateHUD(); refreshBlocked(); save(); setTimeout(checkWin, 250); }, 480); } else { document.getElementById('hintText').textContent = remaining + ' screw(s) left on this plank. Tap next glowing screw.'; if (trayItems.length >= TRAY_MAX) checkGameOver(); } }
+    function checkGameOver() { if (trayItems.length >= TRAY_MAX) { var boardLeft = document.querySelectorAll('#board .screw').length; if (boardLeft > 0) { playOver(); setTimeout(function () { document.getElementById('overModal').classList.add('show'); }, 300); } } }
+    function checkWin() { if (document.querySelectorAll('#board .screw').length === 0) { score += 100; updateHUD(); if (currentLevel >= unlocked && currentLevel < LEVELS.length - 1) unlocked = currentLevel + 1; var msg = currentLevel === LEVELS.length - 1 ? 'You completed ALL 12 levels! You are a Legend!' : 'Level ' + (currentLevel + 1) + ' complete! +100 bonus. Level ' + (currentLevel + 2) + ' unlocked.'; document.getElementById('winText').textContent = msg; document.getElementById('winScore').textContent = 'Total Score: ' + score + ' • Moves: ' + moves; save(); renderGrid(); playWin(); showConfetti(); document.getElementById('winModal').classList.add('show'); } }
+    function showConfetti() { var colors = ['#ffb347', '#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#fff']; for (var i = 0; i < 50; i++) { var c = document.createElement('div'); c.className = 'confetti'; c.style.left = (Math.random() * 100) + 'vw'; c.style.background = colors[i % colors.length]; c.style.animationDelay = (Math.random() * 0.6) + 's'; document.body.appendChild(c); setTimeout((function (el) { return function () { if (el.parentNode) el.remove(); } })(c), 2800); } }
+    function showHint() { playClick(); var avail = document.querySelector('#board .screw:not(.blocked)'); if (avail) { avail.style.outline = '4px solid #00ff00'; setTimeout(function () { avail.style.outline = ''; }, 1200); document.getElementById('hintText').textContent = '💡 Tap the green-outlined screw!'; } else { document.getElementById('hintText').textContent = 'No free screw.'; } }
+    function closeWinAndNext() { playClick(); document.getElementById('winModal').classList.remove('show'); if (currentLevel < LEVELS.length - 1) { currentLevel++; moves = 0; loadLevel(); } }
+    function closeOverAndRestart() { playClick(); document.getElementById('overModal').classList.remove('show'); moves = 0; loadLevel(); }
+    function nextLevel() { playClick(); if (currentLevel < unlocked) { currentLevel++; moves = 0; loadLevel(); } else { alert('Complete this level to unlock next!'); } }
+    function restartLevel() { playClick(); moves = 0; loadLevel(); }
+    function showHow() { playClick(); document.getElementById('howModal').classList.add('show'); }
+    function closeHow() { playClick(); document.getElementById('howModal').classList.remove('show'); }
+    document.getElementById('soundBtn').textContent = soundOn ? '🔊' : '🔇';
+    loadLevel();
+  </script>
 </body>
+
 </html>
