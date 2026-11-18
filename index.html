@@ -5,9 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>ScrewCraft - Wood Screw Puzzle</title>
+  <title>ScrewCraft Premium - Wood Screw Puzzle</title>
   <link
-    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap"
     rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -19,7 +19,7 @@
     body {
       height: 100dvh;
       overflow: hidden;
-      background: #2B1A0E;
+      background: #1A0F07;
       font-family: 'Nunito', sans-serif;
     }
 
@@ -27,42 +27,118 @@
       font-family: 'Fredoka', sans-serif;
     }
 
-    .wood-bg {
-      background: linear-gradient(180deg, #8B5A2B 0%, #6B4226 50%, #4A2C15 100%);
+    /* PREMIUM BACKGROUND - Dark luxury wood + vignette */
+    .premium-bg {
+      background: radial-gradient(ellipse at top, #6B4226 0%, #3A220F 45%, #1A0F07 100%);
+      position: relative;
     }
 
+    .premium-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, .02) 0 1px, transparent 1px 80px);
+      pointer-events: none;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, .08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, .15);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .3);
+    }
+
+    .gold-text {
+      background: linear-gradient(180deg, #FFE27A, #FFC107 45%, #B8860B);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .4));
+    }
+
+    .gold-btn {
+      background: linear-gradient(180deg, #FFD95E, #FFA000);
+      box-shadow: 0 4px 0 #B8860B, 0 8px 20px rgba(255, 193, 7, .4);
+      color: #3A220F;
+    }
+
+    .gold-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #B8860B;
+    }
+
+    /* PREMIUM PLANK - 3D Wood */
     .plank {
-      background: linear-gradient(180deg, #D9A066, #B97A3D);
+      background: linear-gradient(180deg, #E8B67A 0%, #D9A066 30%, #B97A3D 70%, #9A5F2A 100%);
       border: 2px solid #7A4A22;
-      box-shadow: 0 4px 0 #5D3A1A, inset 0 1px 0 rgba(255, 255, 255, .4);
-      transition: all .3s;
+      border-radius: 18px;
+      box-shadow: 0 6px 0 #4A2C15, 0 10px 20px rgba(0, 0, 0, .4), inset 0 2px 0 rgba(255, 255, 255, .5), inset 0 -2px 0 rgba(0, 0, 0, .15);
+      transition: all .4s cubic-bezier(.34, 1.56, .64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .plank::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .18), transparent);
+      transform: translateX(-100%);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+
+      0%,
+      60% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(100%);
+      }
     }
 
     .plank.clear {
-      transform: translateY(20px) scale(.9);
+      transform: translateY(30px) scale(.85) rotate(2deg);
       opacity: 0;
       pointer-events: none;
     }
 
+    /* PREMIUM SCREW - Metallic 3D */
     .screw {
-      width: 44px;
-      height: 44px;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      transition: all .18s;
+      font-size: 23px;
+      transition: all .18s cubic-bezier(.34, 1.56, .64, 1);
       position: relative;
-      box-shadow: inset -3px -4px 0 rgba(0, 0, 0, .25), 0 3px 0 rgba(0, 0, 0, .3);
+      box-shadow: inset -4px -5px 0 rgba(0, 0, 0, .28), inset 3px 4px 0 rgba(255, 255, 255, .35), 0 4px 0 rgba(0, 0, 0, .35), 0 6px 12px rgba(0, 0, 0, .3);
     }
 
-    /* 4. Selectable vs Blocked - CLEAR */
+    .screw::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 8px;
+      width: 10px;
+      height: 10px;
+      background: rgba(255, 255, 255, .6);
+      border-radius: 50%;
+      filter: blur(1px);
+    }
+
     .screw.selectable {
       cursor: pointer;
       outline: 3px solid #fff;
       outline-offset: 2px;
-      animation: pulse 1.2s infinite;
+      animation: pulseGlow 1.1s infinite;
+    }
+
+    .screw.selectable:hover {
+      transform: scale(1.12) rotate(5deg);
     }
 
     .screw.selectable:active {
@@ -70,10 +146,10 @@
     }
 
     .screw.blocked {
-      opacity: .45;
-      filter: grayscale(1);
+      opacity: .42;
+      filter: grayscale(1) brightness(.7);
       cursor: not-allowed;
-      outline: 2px dashed rgba(255, 255, 255, .4);
+      outline: 2px dashed rgba(255, 255, 255, .35);
     }
 
     .screw.blocked::after {
@@ -82,34 +158,35 @@
       font-size: 14px;
       color: #fff;
       font-weight: 900;
+      text-shadow: 0 1px 2px #000;
     }
 
     .screw.selected {
       outline: 4px solid #FFC107;
-      transform: translateY(-6px) scale(1.15);
-      box-shadow: 0 0 0 4px #FFC107, 0 10px 20px rgba(0, 0, 0, .4);
+      transform: translateY(-7px) scale(1.18);
+      box-shadow: 0 0 0 4px #FFC107, 0 12px 24px rgba(0, 0, 0, .5);
       z-index: 10;
     }
 
-    @keyframes pulse {
+    @keyframes pulseGlow {
 
       0%,
       100% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, .6);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, .7), inset -4px -5px 0 rgba(0, 0, 0, .28);
       }
 
       50% {
-        box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+        box-shadow: 0 0 0 7px rgba(255, 255, 255, 0), inset -4px -5px 0 rgba(0, 0, 0, .28);
       }
     }
 
     @keyframes pop {
       0% {
-        transform: scale(.5);
+        transform: scale(.4) rotate(-10deg);
       }
 
       70% {
-        transform: scale(1.2);
+        transform: scale(1.25) rotate(3deg);
       }
 
       100% {
@@ -118,7 +195,23 @@
     }
 
     .pop {
-      animation: pop .3s ease;
+      animation: pop .35s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    @keyframes floatIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .floatIn {
+      animation: floatIn .4s ease both;
     }
 
     @keyframes shake {
@@ -129,11 +222,11 @@
       }
 
       25% {
-        transform: translateX(-6px);
+        transform: translateX(-7px);
       }
 
       75% {
-        transform: translateX(6px);
+        transform: translateX(7px);
       }
     }
 
@@ -141,163 +234,266 @@
       animation: shake .3s 2;
     }
 
+    @keyframes confettiFall {
+      to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .confetti {
+      position: fixed;
+      top: -20px;
+      width: 10px;
+      height: 14px;
+      z-index: 100;
+      animation: confettiFall 2.5s linear forwards;
+      border-radius: 2px;
+    }
+
+    /* PREMIUM TRAY */
+    .tray-premium {
+      background: linear-gradient(180deg, #2B1A0E, #1A0F07);
+      border: 1px solid rgba(255, 193, 7, .3);
+      box-shadow: 0 -4px 30px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .1);
+    }
+
     .slot {
-      width: 46px;
-      height: 46px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
-      background: #1A0F07;
+      background: radial-gradient(circle at 35% 30%, #2A1A0E, #0F0803);
       border: 2px dashed #6B4226;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: inset 0 3px 6px rgba(0, 0, 0, .7);
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 255, 255, .08);
+      transition: all .2s;
     }
 
     .slot.empty::after {
       content: '+';
       color: #6B4226;
       font-weight: 900;
+      font-size: 18px;
     }
 
     .slot.filled {
       border-style: solid;
       border-color: #FFC107;
+      box-shadow: 0 0 12px rgba(255, 193, 7, .5), inset 0 2px 4px rgba(0, 0, 0, .5);
     }
 
-    .modal {
-      backdrop-filter: blur(4px);
+    .progress-bar {
+      height: 8px;
+      background: rgba(255, 255, 255, .15);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FFD95E, #FF6B00);
+      border-radius: 99px;
+      transition: width .5s;
+      box-shadow: 0 0 10px rgba(255, 193, 7, .6);
     }
   </style>
 </head>
 
-<body class="wood-bg text-white">
+<body class="premium-bg text-white">
 
-  <!-- 7. HEADER - Fixed, Safe Area, No Cut Off -->
   <div
-    class="w-full max-w-[480px] mx-auto h-[100dvh] flex flex-col px-3 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+    class="w-full max-w-[480px] mx-auto h-[100dvh] flex flex-col px-3 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] relative z-10">
 
+    <!-- PREMIUM HEADER -->
     <header class="flex items-center justify-between py-2 shrink-0">
       <div>
-        <h1 class="font-head text-[26px] leading-none font-bold tracking-wide">🔩 ScrewCraft</h1>
-        <p class="text-[11px] text-amber-200/90 font-bold">WOOD SCREW PUZZLE • LEVEL <span id="level">1</span></p>
+        <h1 class="font-head text-[28px] leading-none font-bold gold-text tracking-wide">🔩 ScrewCraft</h1>
+        <p class="text-[10px] text-amber-200/80 font-black tracking-[1.5px] mt-1">PREMIUM • LEVEL <span
+            id="level">1</span> • <span id="levelName">Workshop</span></p>
+        <div class="progress-bar w-[150px] mt-1.5">
+          <div id="progress" class="progress-fill" style="width:0%"></div>
+        </div>
       </div>
-      <div class="flex gap-2">
-        <div class="bg-black/30 rounded-xl px-3 py-1.5 text-center min-w-[64px]">
-          <p class="text-[10px] text-amber-200 font-bold">SCORE</p>
-          <p id="score" class="font-head text-lg leading-none">0</p>
+      <div class="flex gap-2 items-center">
+        <div class="glass rounded-2xl px-3 py-1.5 text-center min-w-[66px]">
+          <p class="text-[9px] text-amber-200 font-black tracking-wider">SCORE</p>
+          <p id="score" class="font-head text-[20px] leading-none font-bold">0</p>
         </div>
-        <div class="bg-black/30 rounded-xl px-3 py-1.5 text-center min-w-[56px]">
-          <p class="text-[10px] text-amber-200 font-bold">MOVES</p>
-          <p id="moves" class="font-head text-lg leading-none">0</p>
+        <div class="glass rounded-2xl px-3 py-1.5 text-center min-w-[58px]">
+          <p class="text-[9px] text-amber-200 font-black tracking-wider">MOVES</p>
+          <p id="moves" class="font-head text-[20px] leading-none font-bold">0</p>
         </div>
-        <button onclick="openHow()"
-          class="w-10 h-10 bg-amber-400 text-black rounded-xl font-head text-xl shadow active:scale-90">?</button>
+        <!-- SOUND TOGGLE -->
+        <button id="soundBtn" onclick="toggleSound()"
+          class="w-10 h-10 glass rounded-2xl text-[20px] active:scale-90">🔊</button>
+        <button onclick="openHow()" class="w-10 h-10 gold-btn rounded-2xl font-head text-xl font-bold">?</button>
       </div>
     </header>
 
-    <!-- Legend - 4. Clear Instructions -->
-    <div class="flex justify-center gap-3 text-[11px] font-bold bg-black/20 rounded-full py-1.5 px-2 shrink-0">
-      <span>🟢 <span class="text-white">Tap to Pick</span></span>
-      <span>⚫ <span class="text-white/70">Blocked</span></span>
-      <span>⭐ <span class="text-amber-300">3 Same = Clear</span></span>
+    <!-- COMBO + BEST -->
+    <div class="flex justify-between items-center shrink-0 mt-1">
+      <div class="flex gap-2 text-[11px] font-black bg-black/25 rounded-full py-1.5 px-3 backdrop-blur">
+        <span>🟢 Pick</span><span class="text-white/30">|</span><span>⚫ Blocked</span><span
+          class="text-white/30">|</span><span class="text-amber-300">⭐ 3 = Clear</span>
+      </div>
+      <div id="combo" class="text-[11px] font-black bg-amber-400 text-black px-2.5 py-1 rounded-full hidden">🔥 COMBO x2
+      </div>
     </div>
 
-    <!-- 3. BOARD - Centered, Not Oversized -->
+    <!-- BOARD -->
     <main class="flex-1 flex flex-col items-center justify-center gap-2 overflow-hidden py-2 min-h-0">
-      <p class="text-[12px] font-bold text-amber-100/90">Clear all planks! &nbsp; Planks left: <span id="planksLeft"
-          class="text-white">4</span></p>
-      <div id="board" class="w-full max-w-[380px] flex flex-col gap-2.5"></div>
+      <p class="text-[12px] font-bold text-amber-100/90">Clear all planks! &nbsp; <span
+          class="bg-white/10 px-2 py-0.5 rounded-full">Planks left: <b id="planksLeft">4</b></span></p>
+      <div id="board" class="w-full max-w-[380px] flex flex-col gap-3"></div>
       <div class="flex gap-2 mt-1">
-        <button onclick="undo()"
-          class="bg-white text-[#5D3A1A] px-4 py-2 rounded-xl font-head font-bold text-sm shadow active:scale-95">↩
+        <button onclick="playBtn();undo()"
+          class="bg-white text-[#5D3A1A] px-4 py-2.5 rounded-2xl font-head font-bold text-[13px] shadow-lg active:scale-95">↩
           Undo</button>
-        <button onclick="restart()"
-          class="bg-amber-400 text-black px-4 py-2 rounded-xl font-head font-bold text-sm shadow active:scale-95">🔄
-          Restart</button>
-        <button onclick="shuffleHint()"
-          class="bg-green-500 px-4 py-2 rounded-xl font-head font-bold text-sm shadow active:scale-95">💡 Hint</button>
+        <button onclick="playBtn();restart()"
+          class="gold-btn px-4 py-2.5 rounded-2xl font-head font-bold text-[13px] active:scale-95">🔄 Restart</button>
+        <button onclick="playBtn();shuffleHint()"
+          class="bg-gradient-to-b from-green-400 to-green-600 text-white px-4 py-2.5 rounded-2xl font-head font-bold text-[13px] shadow-lg active:scale-95">💡
+          Hint</button>
       </div>
     </main>
 
-    <!-- 5. TRAY - Proper Hierarchy -->
-    <footer
-      class="shrink-0 bg-[#1A0F07]/90 rounded-t-[22px] rounded-b-2xl p-3 border-t-4 border-amber-500/50 shadow-2xl">
-      <div class="flex justify-between items-center mb-2 px-1">
-        <p class="font-head font-bold text-sm tracking-wide">🧰 SCREW TRAY</p>
-        <p id="trayCount" class="text-[11px] font-bold bg-red-500/20 text-red-200 px-2 py-0.5 rounded-full">0 / 7</p>
+    <!-- PREMIUM TRAY -->
+    <footer class="shrink-0 tray-premium rounded-[24px] p-3.5">
+      <div class="flex justify-between items-center mb-2.5 px-1">
+        <p class="font-head font-bold text-[14px] tracking-wide">🧰 <span class="gold-text">SCREW TRAY</span></p>
+        <p id="trayCount" class="text-[11px] font-black bg-red-500/20 text-red-200 px-2.5 py-1 rounded-full">0 / 7</p>
       </div>
       <div id="tray" class="flex justify-center gap-1.5"></div>
-      <p class="text-center text-[10px] text-amber-200/70 mt-2 font-bold">Collect 3 same colors to remove them</p>
+      <p class="text-center text-[10px] text-amber-200/60 mt-2.5 font-bold tracking-wide">COLLECT 3 SAME COLORS TO
+        REMOVE THEM</p>
     </footer>
   </div>
 
-  <!-- 6. HOW TO PLAY - Modal, Not Hidden -->
-  <div id="howModal" class="fixed inset-0 bg-black/70 modal hidden items-center justify-center p-4 z-50">
-    <div class="bg-[#FFF8E7] text-[#3A220F] rounded-[24px] p-5 w-full max-w-[380px] shadow-2xl">
-      <h2 class="font-head text-2xl font-bold text-center">How to Play 🎮</h2>
-      <div class="space-y-3 mt-4 text-[14px] font-bold">
-        <div class="flex gap-3 bg-white p-3 rounded-2xl"><span class="text-2xl">1️⃣</span>
-          <p><b>Tap a glowing screw</b> - Only top screws are selectable. Grey screws are blocked.</p>
+  <!-- HOW TO PLAY - Premium Modal -->
+  <div id="howModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-[#FFF8E7] text-[#3A220F] rounded-[28px] p-5 w-full max-w-[380px] shadow-2xl floatIn">
+      <div class="text-center"><span class="text-4xl">🎮</span>
+        <h2 class="font-head text-[26px] font-bold">How to Play</h2>
+        <p class="text-[12px] font-bold text-gray-500">Master in 30 seconds</p>
+      </div>
+      <div class="space-y-2.5 mt-4 text-[13.5px] font-bold">
+        <div class="flex gap-3 bg-white p-3 rounded-2xl shadow-sm border border-amber-100"><span
+            class="text-2xl">1️⃣</span>
+          <p><b>Tap glowing screw</b> - Only top screws work. Grey = Blocked.</p>
         </div>
-        <div class="flex gap-3 bg-white p-3 rounded-2xl"><span class="text-2xl">2️⃣</span>
-          <p><b>Fill your tray</b> - Screw goes to tray. Get <b>3 same colors</b> to clear them.</p>
+        <div class="flex gap-3 bg-white p-3 rounded-2xl shadow-sm border border-amber-100"><span
+            class="text-2xl">2️⃣</span>
+          <p><b>Fill tray</b> - Get <b class="text-amber-600">3 same colors</b> to auto-clear +100 pts.</p>
         </div>
-        <div class="flex gap-3 bg-white p-3 rounded-2xl"><span class="text-2xl">3️⃣</span>
-          <p><b>Clear all planks</b> - Plank disappears when empty. Don't let tray fill to 7!</p>
+        <div class="flex gap-3 bg-white p-3 rounded-2xl shadow-sm border border-amber-100"><span
+            class="text-2xl">3️⃣</span>
+          <p><b>Clear all planks</b> - Empty plank disappears. Tray full (7) = Game Over.</p>
+        </div>
+        <div class="flex gap-3 bg-amber-50 p-3 rounded-2xl border border-amber-200"><span class="text-2xl">🔊</span>
+          <p><b>Sound ON</b> - Hear clicks, matches & wins. Tap 🔊 to mute.</p>
         </div>
       </div>
-      <button onclick="closeHow()"
-        class="w-full mt-4 bg-[#8B5A2B] text-white font-head py-3 rounded-2xl font-bold active:scale-95">Got It! Let's
-        Play →</button>
+      <button onclick="playBtn();closeHow()"
+        class="w-full mt-4 gold-btn font-head py-3.5 rounded-2xl font-bold text-[16px]">Got It! Let's Play →</button>
     </div>
   </div>
 
-  <!-- Win / Lose -->
-  <div id="endModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
-    <div class="bg-white text-black rounded-[24px] p-6 w-full max-w-[360px] text-center">
-      <div id="endEmoji" class="text-6xl">🎉</div>
-      <h2 id="endTitle" class="font-head text-3xl font-bold mt-2">You Win!</h2>
-      <p id="endText" class="font-bold text-gray-600 mt-1">All planks cleared!</p>
-      <p class="mt-3">Final Score: <b id="finalScore">0</b></p>
-      <button onclick="nextLevel()"
-        class="w-full mt-4 bg-green-600 text-white font-head py-3 rounded-2xl font-bold">Next Level →</button>
+  <!-- WIN / LOSE - Premium -->
+  <div id="endModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div
+      class="bg-gradient-to-b from-white to-amber-50 text-black rounded-[28px] p-6 w-full max-w-[360px] text-center shadow-2xl floatIn relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300">
+      </div>
+      <div id="endEmoji" class="text-[64px] leading-none">🎉</div>
+      <h2 id="endTitle" class="font-head text-[32px] font-bold mt-2">You Win!</h2>
+      <p id="endText" class="font-bold text-gray-600 text-[14px]">All planks cleared!</p>
+      <div class="flex justify-center gap-3 mt-4">
+        <div class="bg-white rounded-2xl px-4 py-2 shadow">
+          <p class="text-[10px] font-black text-gray-400">SCORE</p>
+          <p id="finalScore" class="font-head text-xl font-bold">0</p>
+        </div>
+        <div class="bg-white rounded-2xl px-4 py-2 shadow">
+          <p class="text-[10px] font-black text-gray-400">MOVES</p>
+          <p id="finalMoves" class="font-head text-xl font-bold">0</p>
+        </div>
+        <div class="bg-white rounded-2xl px-4 py-2 shadow">
+          <p class="text-[10px] font-black text-gray-400">LEVEL</p>
+          <p id="finalLevel" class="font-head text-xl font-bold">1</p>
+        </div>
+      </div>
+      <div id="stars" class="text-[32px] mt-3 tracking-widest">⭐⭐⭐</div>
+      <button onclick="playBtn();nextLevel()"
+        class="w-full mt-4 gold-btn font-head py-3.5 rounded-2xl font-bold text-[16px]">Next Level →</button>
     </div>
   </div>
 
   <script>
+    // ========== PREMIUM SOUND ENGINE - No files needed ==========
+    let soundOn = true;
+    let audioCtx = null;
+    function getCtx() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); return audioCtx; }
+    function tone(freq, dur, type = 'sine', vol = 0.15, delay = 0) {
+      if (!soundOn) return;
+      try {
+        let ctx = getCtx(), o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = type; o.frequency.value = freq;
+        g.gain.setValueAtTime(vol, ctx.currentTime + delay);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(ctx.currentTime + delay); o.stop(ctx.currentTime + delay + dur);
+      } catch (e) { }
+    }
+    function playClick() { tone(600, 0.08, 'sine', 0.12); if (navigator.vibrate) navigator.vibrate(10); }
+    function playBtn() { tone(800, 0.07, 'triangle', 0.12); }
+    function playPick() { tone(500, 0.1, 'triangle', 0.18); tone(750, 0.12, 'sine', 0.12, 0.05); if (navigator.vibrate) navigator.vibrate(15); }
+    function playMatch() { [523, 659, 784, 1046].forEach((f, i) => tone(f, 0.18, 'triangle', 0.18, i * 0.07)); if (navigator.vibrate) navigator.vibrate([20, 30, 20]); }
+    function playWin() { [523, 659, 784, 1046, 1318].forEach((f, i) => tone(f, 0.3, 'triangle', 0.2, i * 0.12)); }
+    function playLose() { tone(300, 0.3, 'sawtooth', 0.1); tone(200, 0.4, 'sawtooth', 0.1, 0.15); }
+    function playClear() { tone(900, 0.15, 'sine', 0.15); tone(1200, 0.2, 'sine', 0.12, 0.08); }
+    function toggleSound() { soundOn = !soundOn; document.getElementById('soundBtn').textContent = soundOn ? '🔊' : '🔇'; if (soundOn) playBtn(); }
+
+    // ========== GAME LOGIC ==========
     const COLORS = [
-      { c: '#EF4444', e: '🔴' }, { c: '#3B82F6', e: '🔵' }, { c: '#22C55E', e: '🟢' }, { c: '#EAB308', e: '🟡' },
-      { c: '#A855F7', e: '🟣' }, { c: '#F97316', e: '🟠' }, { c: '#EC4899', e: '🌸' }, { c: '#06B6D4', e: '🩵' }
+      { c: '#EF4444' }, { c: '#3B82F6' }, { c: '#22C55E' }, { c: '#EAB308' },
+      { c: '#A855F7' }, { c: '#F97316' }, { c: '#EC4899' }, { c: '#06B6D4' }
     ];
-    let level = 1, score = 0, moves = 0, board = [], tray = [], history = [];
+    const LEVEL_NAMES = ['Workshop', 'Carpenter', 'Master', 'Expert', 'Legend'];
+    let level = 1, score = 0, moves = 0, board = [], tray = [], history = [], combo = 0;
     function genBoard() {
-      // 4 planks x 4 screws = 16, pairs ensure solvable
       let pool = [];
-      COLORS.slice(0, 4).forEach((col, ci) => { for (let i = 0; i < 4; i++) pool.push(ci); });
+      let colorCount = level === 1 ? 4 : level === 2 ? 5 : 6;
+      let plankCount = level === 1 ? 4 : level === 2 ? 5 : 6;
+      COLORS.slice(0, colorCount).forEach((col, ci) => { for (let i = 0; i < 4; i++) pool.push(ci); });
+      // Fill remaining for plankCount
+      while (pool.length < plankCount * 4) { pool.push(Math.floor(Math.random() * colorCount)); }
       pool.sort(() => Math.random() - .5);
       board = [];
-      for (let p = 0; p < 4; p++) { board.push(pool.slice(p * 4, (p + 1) * 4).map(ci => ({ color: ci, id: Math.random() }))); }
-      tray = []; history = []; moves = 0; render();
+      for (let p = 0; p < plankCount; p++) { board.push(pool.slice(p * 4, (p + 1) * 4).map(ci => ({ color: ci, id: Math.random() }))); }
+      tray = []; history = []; moves = 0; combo = 0; render();
     }
-    function isSelectable(pIdx, sIdx) { return sIdx === 0; } // Top screw only - clear rule
+    function isSelectable(pIdx, sIdx) { return sIdx === 0; }
     function render() {
       document.getElementById('level').textContent = level;
+      document.getElementById('levelName').textContent = LEVEL_NAMES[Math.min(level - 1, 4)];
       document.getElementById('score').textContent = score;
       document.getElementById('moves').textContent = moves;
-      let left = board.filter(p => p.length > 0).length;
+      let total = board.length, left = board.filter(p => p.length > 0).length;
       document.getElementById('planksLeft').textContent = left;
+      document.getElementById('progress').style.width = ((total - left) / total * 100) + '%';
       const b = document.getElementById('board'); b.innerHTML = '';
       board.forEach((plank, pIdx) => {
         let div = document.createElement('div');
-        div.className = 'plank w-full rounded-[16px] px-3 py-2.5 flex justify-center gap-2 min-h-[62px] items-center ' + (plank.length === 0 ? 'clear' : '');
-        if (plank.length === 0) { div.innerHTML = '<span class="text-[12px] font-bold text-white/80">✓ CLEARED</span>'; }
+        div.className = 'plank w-full px-3 py-2.5 flex justify-center gap-2 min-h-[64px] items-center ' + (plank.length === 0 ? 'clear' : '');
+        if (plank.length === 0) { div.innerHTML = '<span class="text-[12px] font-black text-white/90 tracking-wide">✓ CLEARED • +50</span>'; }
         else plank.forEach((s, sIdx) => {
           let btn = document.createElement('button');
           let selectable = isSelectable(pIdx, sIdx);
           btn.className = 'screw pop ' + (selectable ? 'selectable' : 'blocked');
-          btn.style.background = COLORS[s.color].c;
+          btn.style.background = `linear-gradient(135deg, ${COLORS[s.color].c}, ${COLORS[s.color].c}DD)`;
           btn.innerHTML = '🔩';
-          btn.onclick = () => { if (!selectable) return; pick(pIdx, sIdx); };
+          btn.onclick = () => { if (!selectable) { tone(200, 0.08, 'sine', 0.08); return; } pick(pIdx, sIdx); };
           div.appendChild(btn);
         });
         b.appendChild(div);
@@ -305,28 +501,48 @@
       const t = document.getElementById('tray'); t.innerHTML = '';
       for (let i = 0; i < 7; i++) {
         let slot = document.createElement('div'); slot.className = 'slot ' + (tray[i] ? 'filled' : 'empty');
-        if (tray[i]) { let s = document.createElement('div'); s.className = 'screw pop'; s.style.background = COLORS[tray[i].color].c; s.style.width = '38px'; s.style.height = '38px'; s.innerHTML = '🔩'; slot.appendChild(s); }
+        if (tray[i]) { let s = document.createElement('div'); s.className = 'screw pop'; s.style.background = COLORS[tray[i].color].c; s.style.width = '38px'; s.style.height = '38px'; s.style.fontSize = '18px'; s.innerHTML = '🔩'; slot.appendChild(s); }
         t.appendChild(slot);
       }
-      document.getElementById('trayCount').textContent = tray.length + ' / 7';
-      document.getElementById('trayCount').className = 'text-[11px] font-bold px-2 py-0.5 rounded-full ' + (tray.length >= 5 ? 'bg-red-500 text-white' : 'bg-red-500/20 text-red-200');
+      let tc = document.getElementById('trayCount'); tc.textContent = tray.length + ' / 7';
+      tc.className = 'text-[11px] font-black px-2.5 py-1 rounded-full ' + (tray.length >= 5 ? 'bg-red-500 text-white animate-pulse' : 'bg-red-500/20 text-red-200');
+      let comboEl = document.getElementById('combo');
+      if (combo >= 2) { comboEl.classList.remove('hidden'); comboEl.textContent = '🔥 COMBO x' + combo; } else comboEl.classList.add('hidden');
     }
     function pick(pIdx, sIdx) {
       history.push(JSON.parse(JSON.stringify({ board, tray, score, moves })));
-      let screw = board[pIdx].shift(); tray.push(screw); moves++;
-      // Check 3 same
+      let screw = board[pIdx].shift(); tray.push(screw); moves++; playPick();
+      let wasEmpty = board[pIdx].length === 0;
+      if (wasEmpty) { score += 50; playClear(); }
       let counts = {}; tray.forEach(s => counts[s.color] = (counts[s.color] || 0) + 1);
-      for (let col in counts) { if (counts[col] >= 3) { tray = tray.filter(s => s.color != col); score += 100; } }
+      let matched = false;
+      for (let col in counts) { if (counts[col] >= 3) { tray = tray.filter(s => s.color != col); score += 100; combo++; matched = true; } }
+      if (matched) playMatch(); else combo = 0;
       render();
-      if (board.every(p => p.length === 0)) showEnd(true);
-      else if (tray.length >= 7) { document.getElementById('tray').classList.add('shake'); setTimeout(() => document.getElementById('tray').classList.remove('shake'), 600); showEnd(false); }
+      if (board.every(p => p.length === 0)) { setTimeout(() => showEnd(true), 400); }
+      else if (tray.length >= 7) { document.getElementById('tray').classList.add('shake'); setTimeout(() => document.getElementById('tray').classList.remove('shake'), 600); setTimeout(() => showEnd(false), 400); }
     }
     function undo() { if (!history.length) return; let h = history.pop(); board = h.board; tray = h.tray; score = h.score; moves = h.moves; render(); }
     function restart() { genBoard(); }
-    function shuffleHint() { let el = document.querySelector('.screw.selectable'); if (el) { el.classList.add('selected'); setTimeout(() => el.classList.remove('selected'), 800); } }
-    function openHow() { let m = document.getElementById('howModal'); m.classList.remove('hidden'); m.classList.add('flex'); }
+    function shuffleHint() { let el = document.querySelector('.screw.selectable'); if (el) { el.classList.add('selected'); playClick(); setTimeout(() => el.classList.remove('selected'), 900); } }
+    function openHow() { playBtn(); let m = document.getElementById('howModal'); m.classList.remove('hidden'); m.classList.add('flex'); }
     function closeHow() { let m = document.getElementById('howModal'); m.classList.add('hidden'); m.classList.remove('flex'); }
-    function showEnd(win) { let m = document.getElementById('endModal'); m.classList.remove('hidden'); m.classList.add('flex'); document.getElementById('endEmoji').textContent = win ? '🎉' : '💥'; document.getElementById('endTitle').textContent = win ? 'You Win!' : 'Tray Full!'; document.getElementById('endText').textContent = win ? 'All planks cleared! Amazing!' : 'Tray is full. Try again!'; document.getElementById('finalScore').textContent = score; }
+    function showConfetti() {
+      let colors = ['#FFC107', '#EF4444', '#22C55E', '#3B82F6', '#EC4899', '#fff'];
+      for (let i = 0; i < 60; i++) { let c = document.createElement('div'); c.className = 'confetti'; c.style.left = Math.random() * 100 + 'vw'; c.style.background = colors[i % colors.length]; c.style.animationDelay = (Math.random() * 0.5) + 's'; c.style.animationDuration = (2 + Math.random() * 1.5) + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 4000); }
+    }
+    function showEnd(win) {
+      let m = document.getElementById('endModal'); m.classList.remove('hidden'); m.classList.add('flex');
+      document.getElementById('endEmoji').textContent = win ? '🏆' : '💥';
+      document.getElementById('endTitle').textContent = win ? 'You Win!' : 'Tray Full!';
+      document.getElementById('endText').textContent = win ? 'All planks cleared! Amazing work!' : 'Tray is full. Try again!';
+      document.getElementById('finalScore').textContent = score;
+      document.getElementById('finalMoves').textContent = moves;
+      document.getElementById('finalLevel').textContent = level;
+      let stars = win ? (moves <= 12 ? '⭐⭐⭐' : moves <= 18 ? '⭐⭐' : '⭐') : '☆☆☆';
+      document.getElementById('stars').textContent = stars;
+      if (win) { playWin(); showConfetti(); } else playLose();
+    }
     function nextLevel() { document.getElementById('endModal').classList.add('hidden'); document.getElementById('endModal').classList.remove('flex'); if (board.every(p => p.length === 0)) level++; genBoard(); }
     genBoard();
   </script>
